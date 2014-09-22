@@ -13,3 +13,6 @@ tally: tally.hs Infer.hs
 gamble: gamble.hs Infer.hs
 	ghc -XPackageImports --make gamble.hs
 
+clean: hello dice tally gamble
+	rm -f *.hi *.o hello dice tally gamble
+
