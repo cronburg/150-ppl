@@ -23,6 +23,9 @@ rTF a = realToFrac a
 xor :: Bool -> Bool -> Bool
 xor p q = (p || q) && (not (p && q))
 
+count :: Eq a => a -> [a] -> Int
+count a as = length $ elemIndices a as
+
 -- Gets the domain (list of a's) for which the P a is non-zero
 support :: P a -> [a]
 support (P xs) = map fst xs
@@ -41,6 +44,31 @@ probOf a (P as) = case (lookup a as) of
 bind :: P a -> P b -> P (a,b)
 bind (P as) (P bs) = P [((a,b),pa*pb) | (a,pa) <- as, (b,pb) <- bs]
 
+-- Bind n distributions into one over all possible groupings
+bindn :: Eq a => [P a] -> P [a]
+bindn (d0:[]) = pmap (\a -> [a]) d0 -- convert a's to list of a's
+bindn (d0:d1:[]) = pmap (\(a0,a1) -> [a0,a1]) (bind d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
+-- recursively bind and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
+bindn (d0:ds) = pmap (\(a,as) -> a:as) (bind d0 (bindn ds))
+
+-- A Bag is a an unordered list (order doesn't matter) which allows duplicates
+data Bag a = Bag [a] 
+instance Eq a => Eq (Bag a) where
+  Bag [] == Bag [] = True
+  Bag as == Bag [] = False
+  Bag [] == Bag bs = False
+  Bag (a:as) == Bag bs = (elem a bs) && ((Bag as) == (Bag (delete a bs)))
+
+-- Bind n distributions into one over all possible groupings (where order doesn't matter)
+bindnBag2 :: Eq a => [P a] -> P (Bag a)
+bindnBag2 (d0:[]) = pmap (\a -> Bag [a]) d0 -- convert a's to list of a's
+bindnBag2 (d0:d1:[]) = pmap (\(a0,a1) -> Bag [a0,a1]) (bind d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
+-- recursively bind and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
+bindnBag2 (d0:ds) = pmap (\(a,Bag as) -> Bag (a:as)) (bind d0 (bindnBag2 ds))
+
+bindnBag :: Eq a => [P a] -> P [a]
+bindnBag ds = pmap (\(Bag as) -> as) (bindnBag2 ds)
+
 -- Change domain without changing probabilities
 pmap :: Eq b => (a -> b) -> P a -> P b
 pmap f (P as) = regroup $ P [(f a, pa) | (a,pa) <- as]
@@ -54,6 +82,10 @@ normalize (P as) = P [(a,(/) pa $ sum $ map snd as) | (a,pa) <- as]
 -- Zero out the probability of 'a' items not matching the criterion function
 pfilter :: (a -> Bool) -> P a -> P a
 pfilter f (P as) = normalize $ P (filter (\ (a,_) -> f a) as)
+
+-- pfilter without normalizing (i.e. dfilter == Distribution Filter)
+dfilter :: (a -> Bool) -> P a -> P a
+dfilter f (P as) = P (filter (\ (a,_) -> f a) as)
 
 -- TODO: actually regroup things
 regroup :: Eq a => P a -> P a
