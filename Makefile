@@ -7,7 +7,7 @@ hello: hello.hs
 dice: dice.hs Infer.hs
 	ghc -XPackageImports --make dice.hs
 
-tally: tally.hs Infer2.hs
+tally: tally.hs Infer.hs
 	ghc -XPackageImports --make tally.hs
 
 gamble: gamble.hs Infer.hs
