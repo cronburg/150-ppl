@@ -19,6 +19,8 @@ instance Show a => Show (P a) where
 -- Macros
 rTF :: (Real a, Fractional b) => a -> b
 rTF a = realToFrac a
+fI :: (Integral a, Num b) => a -> b
+fI a = fromIntegral a
 
 xor :: Bool -> Bool -> Bool
 xor p q = (p || q) && (not (p && q))
@@ -77,6 +79,15 @@ pmap f (P as) = regroup $ P [(f a, pa) | (a,pa) <- as]
 normalize :: P a -> P a
 normalize (P as) = P [(a,(/) pa $ sum $ map snd as) | (a,pa) <- as]
 
+-- The total 'weight' of a distribution, i.e. what the individual weights / probabilities
+-- sum to. A normalized probability distribution has a weight of 1.0
+weight :: P a -> Double
+weight (P as) = sum (map snd as)
+
+-- Whether or not the given distribution is normalized
+isnorm :: P a -> Bool
+isnorm pas = (==) 1.0 (weight pas)
+
 --zip (map fst as) (map (\ pa -> (/) pa (sum (map snd as))) (map snd as))
 
 -- Zero out the probability of 'a' items not matching the criterion function
@@ -100,4 +111,15 @@ bindx (P as) f =
       -- zp :: [((a,Double),(P b,Double))]
       zp = zip as pbs
   in P $ concat [ [ ((a,b),pa*pb) | (b,pb) <- bs] | ((a,pa),(P bs,pa_)) <- zp]
+
+-- Computes the expected value of the given numeric P dist
+expected :: Real a => P a -> Double
+expected (P as) = foldl (\b (a,pa) -> b + ((rTF a) * pa)) 0.0 as
+
+-- Determines the nth most probable (value,prob) pair in the distribution
+mostProb :: Eq a => Int -> P a -> (a,Double)
+mostProb 0 (P as) =
+  let f = (\(a1,pa1) (a2,pa2) -> if (pa1 > pa2) then (a1,pa1) else (a2,pa2))
+  in foldl f (head as) (tail as)
+mostProb n (P as) = mostProb (n-1) $ P $ delete (mostProb 0 (P as)) as
 

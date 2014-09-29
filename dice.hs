@@ -59,9 +59,10 @@ singleTally d1 d2 throws cutoff =
   --[1..throws]
   in dst4
 
--- P(d4 && d4 && LEFT tallies = n | throws, LEFT < cutoff, bag)
-obsvTlly :: D -> D -> Int -> P D -> Int -> Int -> Double
-obsvTlly d1 d2 n bag throws cutoff =
+-- Generates the P dist over pairs of dice and possible # of tallies on the LHS of the tally sheet
+-- NOTE: The distribution produced is NOT normalized, i.e. RIGHT column of distribution is masked without renormalizing
+tallyDist :: P D -> Int -> Int -> P (Pair, Int)
+tallyDist bag throws cutoff =
   let dst :: P (Pair, Int)
       dst = draw2bindx bag
       dst2 :: P (Pair, Bool)
@@ -72,9 +73,44 @@ obsvTlly d1 d2 n bag throws cutoff =
       dst4 = pmap (\(ab,s) -> ab) dst3 -- unmap the sum < cutoff column
       dst5 :: P (Pair, Int)
       dst5 = bindx dst4 (\(Pair dx dy) -> singleTally dx dy throws cutoff) -- P dist over (Pair, #Tallies on LHS)
-  in probOf (Pair d1 d2, n) dst5
+  in dst5
+
+-- P(d4 && d4 && LEFT tallies = n | throws, LEFT < cutoff, bag)
+obsvTlly :: D -> D -> Int -> P D -> Int -> Int -> Double
+obsvTlly d1 d2 n bag throws cutoff = probOf (Pair d1 d2, n) (tallyDist bag throws cutoff)
+
+-- Computes the expectation value of the number of marks in the left column given a bag, # throws, and cutoff
+avgLeftMarks :: P D -> Int -> Int -> Double
+avgLeftMarks bag throws cutoff = expected (pmap (\(ab,tallies) -> tallies) (tallyDist bag throws cutoff))
+
+-- Computes the expectation value of the number of marks in the right column given a bag, # throws, and cutoff
+avgRightMarks :: P D -> Int -> Int -> Double
+avgRightMarks bag throws cutoff = ((rTF throws) - (avgLeftMarks bag throws cutoff))
+
+-- Generates the probability distribution over the possible payouts for the Guesser,
+-- masking certain values based on how many tallies we are interested in.
+-- NOTE: This distribution is not normalized - i.e. the probabilities don't assume
+-- 'tallies' is a given,
+expPayoutDist :: Int -> P D -> Int -> Int -> Double -> Double -> Double -> Double -> P Double
+expPayoutDist tallies bag throws cutoff g1 g2 g3 g4 = 
+  let dst :: P (Pair, Int)
+      dst = normalize (tallyDist bag throws cutoff) -- i need to remember why this needs to be normalized...
+      dst2 = dfilter (\(ab,t) -> (==) tallies t) dst
+      pg1 = snd $ mostProb 0 dst2 -- probability of correct 1st guess
+      pg2 = snd $ mostProb 1 dst2 -- probability of correct 2nd guess
+      pg3 = snd $ mostProb 2 dst2 -- probability of correct 3rd guess
+      pg4 = (weight dst2) - (pg1 + pg2 + pg3) -- probability of 3 incorrect guesses
+  in (P [(g1,pg1),(g2,pg2),(g3,pg3),(g4,pg4)]) -- P dist over all four possible payouts
+
+expPayout :: P D -> Int -> Int -> Double -> Double -> Double -> Double -> Double
+expPayout bag throws cutoff g1 g2 g3 g4 =
+  let lst :: [P Double]
+      lst = [expPayoutDist t bag throws cutoff g1 g2 g3 g4 | t <- [0..throws]]
+      dst2 = P (zip (map expected lst) (map weight lst))
+  in expected dst2
 
 main = do
+  printf "-------- Dice Problems ---------\n"
   printf "A.1) P dist of a D6  = %s\n" (show $ d2d d6)
   printf "A.2) P dist of a D12 = %s\n" (show $ d2d d12)
   printf "B) P(sum = 11 | d6 && d12) = %.6f\n" (sumEQ d6 d12 11)
@@ -82,9 +118,18 @@ main = do
   printf "C.2) P(d20 && !d20 | bag) = %.6f\n" (drawOnce d20 classbag)
   printf "D) P(d6 && d12 && sum = 11 | bag) = %.6f\n" (draw2sum d6 d12 11 classbag)
   printf "E) P(d6 && d12 | sum = 11) = %.6f\n" (draw2cndtnl d6 d12 11 classbag)
-  print  "-------- Tally Problems --------"
+  printf "-------- Tally Problems --------\n"
   --print (singleTally d4 d4 30 8)
   printf "F) P(d4 && d4 && LHS = 3 marks) = %.8e\n" (obsvTlly d4 d4 3 classbag 30 8)
+  printf "G) Expected number of marks in RIGHT column = %.2f\n" (avgRightMarks classbag 30 8)
+  printf "-------- Gambling Problems -----\n"
+  --print (expPayout classbag 30 8 1.00 0.50 0.25 (-0.10))
+  printf "H) Expected payout for Guesser after one game = $ %.4f\n" (expPayout classbag 30 8 1.00 0.50 0.25 (0 - 0.10))
+  printf "I) Expected payout for Guesser after one game = $ %.4f\n" (expPayout classbag 50 8 1.00 0.50 0.25 (0 - 0.10))
+  
+  --print $ weight (tallyDist classbag 1 8)
+  
+  --print (expPayoutDist 3 classbag 30 8 100.00 0.50 0.25 (-0.10))
 
   --print (pfilter (\a,b -> a+b) (show $ bind (d2d d6) (d2d d12))
   -- printf "B) P(sum = 11 | d6 && d12) = %.4f"
