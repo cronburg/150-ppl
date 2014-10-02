@@ -8,6 +8,9 @@ instance Eq D where D x == D y = x == y -- dice equality
 data Pair = Pair D D deriving (Show) -- pair of dice
 instance Eq Pair where Pair d1 d2 == Pair d3 d4 = (d1 == d3 && d2 == d4) || (d1 == d4 && d2 == d3)
 
+data Column = LEFT | RIGHT deriving (Show,Eq)
+data TallySheet = TS Int Int deriving (Show,Eq)
+
 data P a = P [(a,Double)] deriving (Eq)
 instance Show a => Show (P a) where
   show (P as) = ("P " ++ 
@@ -43,15 +46,15 @@ probOf a (P as) = case (lookup a as) of
   Nothing -> 0.0
 
 -- Bind two distributions into one over all possible pairings
-bind :: P a -> P b -> P (a,b)
-bind (P as) (P bs) = P [((a,b),pa*pb) | (a,pa) <- as, (b,pb) <- bs]
+liftP :: P a -> P b -> P (a,b)
+liftP (P as) (P bs) = P [((a,b),pa*pb) | (a,pa) <- as, (b,pb) <- bs]
 
 -- Bind n distributions into one over all possible groupings
-bindn :: Eq a => [P a] -> P [a]
-bindn (d0:[]) = pmap (\a -> [a]) d0 -- convert a's to list of a's
-bindn (d0:d1:[]) = pmap (\(a0,a1) -> [a0,a1]) (bind d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
+liftPn :: Eq a => [P a] -> P [a]
+liftPn (d0:[]) = pmap (\a -> [a]) d0 -- convert a's to list of a's
+liftPn (d0:d1:[]) = pmap (\(a0,a1) -> [a0,a1]) (liftP d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
 -- recursively bind and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
-bindn (d0:ds) = pmap (\(a,as) -> a:as) (bind d0 (bindn ds))
+liftPn (d0:ds) = pmap (\(a,as) -> a:as) (liftP d0 (liftPn ds))
 
 -- A Bag is a an unordered list (order doesn't matter) which allows duplicates
 data Bag a = Bag [a] 
@@ -62,14 +65,15 @@ instance Eq a => Eq (Bag a) where
   Bag (a:as) == Bag bs = (elem a bs) && ((Bag as) == (Bag (delete a bs)))
 
 -- Bind n distributions into one over all possible groupings (where order doesn't matter)
-bindnBag2 :: Eq a => [P a] -> P (Bag a)
-bindnBag2 (d0:[]) = pmap (\a -> Bag [a]) d0 -- convert a's to list of a's
-bindnBag2 (d0:d1:[]) = pmap (\(a0,a1) -> Bag [a0,a1]) (bind d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
--- recursively bind and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
-bindnBag2 (d0:ds) = pmap (\(a,Bag as) -> Bag (a:as)) (bind d0 (bindnBag2 ds))
+liftPnBag2 :: Eq a => [P a] -> P (Bag a)
+liftPnBag2 (d0:[]) = pmap (\a -> Bag [a]) d0 -- convert a's to list of a's
+liftPnBag2 (d0:d1:[]) = pmap (\(a0,a1) -> Bag [a0,a1]) (liftP d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
+-- recursively liftP and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
+liftPnBag2 (d0:ds) = pmap (\(a,Bag as) -> Bag (a:as)) (liftP d0 (liftPnBag2 ds))
 
-bindnBag :: Eq a => [P a] -> P [a]
-bindnBag ds = pmap (\(Bag as) -> as) (bindnBag2 ds)
+-- Lift a list of P Dists into a P Dist over bags over the original domain
+liftPnBag :: Eq a => [P a] -> P [a]
+liftPnBag ds = pmap (\(Bag as) -> as) (liftPnBag2 ds)
 
 -- Change domain without changing probabilities
 pmap :: Eq b => (a -> b) -> P a -> P b
@@ -99,8 +103,9 @@ dfilter :: (a -> Bool) -> P a -> P a
 dfilter f (P as) = P (filter (\ (a,_) -> f a) as)
 
 -- TODO: actually regroup things
+-- use Ord a instead of Eq.
 regroup :: Eq a => P a -> P a
-regroup (P as) = P [(a, sum $ map snd (filter (\(x,px) -> (==) a x) as)) | a <- (nub $ map fst as)]
+regroup (P as) = P [(a, sum $ map snd (filter (\(a',pa') -> (==) a a') as)) | a <- (nub $ map fst as)]
 
 -- Bind a distribution with a function over its support
 -- i.e. the "joint" probability for each pairing (a,b)
@@ -110,6 +115,7 @@ bindx (P as) f =
       P pbs = pmap f (P as)
       -- zp :: [((a,Double),(P b,Double))]
       zp = zip as pbs
+  --in P [ ((a,b),pa*pb) | (a,pa) <- as, (P bs,pb) <- pbs]
   in P $ concat [ [ ((a,b),pa*pb) | (b,pb) <- bs] | ((a,pa),(P bs,pa_)) <- zp]
 
 -- Computes the expected value of the given numeric P dist
