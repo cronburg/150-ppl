@@ -26,12 +26,13 @@ draw2 d1 d2 bag = probOf (Pair d1 d2) (pmap (\(a,b) -> Pair a b) (liftP bag bag)
 drawOnce :: D -> P D -> Double
 drawOnce d bag = probOf True $ pmap (\(a,b) -> xor ((==) a d) ((==) b d)) (liftP bag bag)
 
+-- Maps from bag space to pairs of dice space
+allPairs :: P D -> P Pair
+allPairs bag = pmap (\(dx,dy) -> Pair dx dy) (liftP bag bag)
+
 -- Generates all possible (die #1, die #2, sum) triplings (tuples)
 draw2bindx :: P D -> P (Pair, Int)
-draw2bindx bag =
-  let allPairs :: P Pair
-      allPairs = pmap (\(dx,dy) -> Pair dx dy) (liftP bag bag)
-  in bindx allPairs (\(Pair a b) -> sumDist a b)
+draw2bindx bag = bindx (allPairs bag) (\(Pair a b) -> sumDist a b)
 
 -- Computes P(d1 && d2 && sum = s | bag)
 draw2sum :: D -> D -> Int -> P D -> Double
