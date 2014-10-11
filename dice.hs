@@ -39,6 +39,6 @@ main = do
   let cutoff10 = (*) 1000 (expPayout classbag (Win 1.00 0.50 0.25 (-0.10)) 30 10)
   printf "K) Guesser should at most pay     : $ %.2f   ( = %.2f - %.2f )\n"
          (cutoff10 - payout30) cutoff10 payout30
-  printf "L) Best split for guesser         = %d" (bestCutoff)
-  --print (allCutoffs)
+  printf "L) Best split for guesser         = %d-%d\n" (bestCutoff - 1) bestCutoff
+  print (allCutoffs)
 

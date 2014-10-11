@@ -2,7 +2,7 @@ module Dice where
 import Infer
 
 die2dist :: D -> P Int
-die2dist (D 10) = equally [0..10]
+die2dist (D 10) = equally [0..9]
 die2dist (D sides) = equally [1..sides]
 d2d = die2dist
 

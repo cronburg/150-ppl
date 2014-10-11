@@ -26,9 +26,9 @@ fI :: (Integral a, Num b) => a -> b
 fI a = fromIntegral a
 
 xor :: Bool -> Bool -> Bool
+count :: Eq a => a -> [a] -> Int
 xor p q = (p || q) && (not (p && q))
 
-count :: Eq a => a -> [a] -> Int
 count a as = length $ elemIndices a as
 
 -- Gets the domain (list of a's) for which the P a is non-zero
