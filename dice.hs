@@ -1,3 +1,4 @@
+import InferHeader
 import Infer
 import Dice
 import Tally

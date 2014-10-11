@@ -1,23 +1,6 @@
 module Infer where
 import Data.List
-import Text.Printf
-
--- Data types
-data D = D Int deriving (Show) -- dice
-instance Eq D where D x == D y = x == y -- dice equality
-data Pair = Pair D D deriving (Show) -- pair of dice
-instance Eq Pair where Pair d1 d2 == Pair d3 d4 = (d1 == d3 && d2 == d4) || (d1 == d4 && d2 == d3)
-
-data Column = LEFT | RIGHT deriving (Show,Eq)
-data TallySheet = TS Int Int deriving (Show,Eq)
-
-data P a = P [(a,Double)] deriving (Eq)
-instance Show a => Show (P a) where
-  show (P as) = ("P " ++ 
-    (show 
-      (zip
-        (map fst as)
-        (map (\x -> (printf "%.6f" x)::String) (map snd as)))))
+import InferHeader
 
 -- Macros
 rTF :: (Real a, Fractional b) => a -> b
@@ -26,9 +9,9 @@ fI :: (Integral a, Num b) => a -> b
 fI a = fromIntegral a
 
 xor :: Bool -> Bool -> Bool
-count :: Eq a => a -> [a] -> Int
 xor p q = (p || q) && (not (p && q))
 
+count :: Eq a => a -> [a] -> Int
 count a as = length $ elemIndices a as
 
 -- Gets the domain (list of a's) for which the P a is non-zero
@@ -55,14 +38,6 @@ liftPn (d0:[]) = pmap (\a -> [a]) d0 -- convert a's to list of a's
 liftPn (d0:d1:[]) = pmap (\(a0,a1) -> [a0,a1]) (liftP d0 d1) -- convert (a0,a1)'s to [a0,a1]'s
 -- recursively bind and convert (a0,(a1,(...,(an)))) into [a0,a1,...,an]
 liftPn (d0:ds) = pmap (\(a,as) -> a:as) (liftP d0 (liftPn ds))
-
--- A Bag is a an unordered list (order doesn't matter) which allows duplicates
-data Bag a = Bag [a] 
-instance Eq a => Eq (Bag a) where
-  Bag [] == Bag [] = True
-  Bag as == Bag [] = False
-  Bag [] == Bag bs = False
-  Bag (a:as) == Bag bs = (elem a bs) && ((Bag as) == (Bag (delete a bs)))
 
 -- Bind n distributions into one over all possible groupings (where order doesn't matter)
 liftPnBag2 :: Eq a => [P a] -> P (Bag a)

@@ -1,10 +1,10 @@
 
 all: dice pfilter
 
-dice: dice.hs Infer.hs Dice.hs Tally.hs Gamble.hs
+dice: dice.hs Infer.hs InferHeader.hs Dice.hs Tally.hs Gamble.hs
 	ghc -O -XPackageImports --make dice.hs
 
-pfilter: pfilter.hs Infer.hs Dice.hs Tally.hs Gamble.hs
+pfilter: pfilter.hs Infer.hs InferHeader.hs Dice.hs Tally.hs Gamble.hs
 	ghc -O -XPackageImports --make pfilter.hs
 
 clean:

@@ -1,4 +1,5 @@
 module Dice where
+import InferHeader
 import Infer
 
 die2dist :: D -> P Int

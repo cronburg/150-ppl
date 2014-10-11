@@ -1,5 +1,6 @@
 module Gamble where
 import Infer
+import InferHeader
 import Dice
 import Tally
 

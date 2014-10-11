@@ -1,4 +1,5 @@
 module Tally where
+import InferHeader
 import Infer
 import Dice
 
