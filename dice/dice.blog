@@ -1,0 +1,119 @@
+
+type Die;
+distinct Die D4,D6,D8,D10,D12,D20;
+type Draw;
+type Roll;
+
+// Class-bag - drawing with replacement
+random Die dieDrawn(Draw d) ~ Categorical
+  ({D4  -> 12, D6  -> 12, D8  -> 12,
+    D10 -> 16, D12 -> 17, D20 -> 17});
+
+// Given a die drawn and roll number, what Integer was rolled
+random Integer intRolled(Draw d, Roll r) ~
+  case dieDrawn(d) in {
+    D4  -> UniformInt(1,4),  D6  -> UniformInt(1,6),
+    D8  -> UniformInt(1,8),  D10 -> UniformInt(0,9),
+    D12 -> UniformInt(1,12), D20 -> UniformInt(1,20)};
+
+// Distribution over all possible die rolls after drawing
+// a random die from the bag:
+//query Roll(Draw);
+
+// A.1)
+//distinct Roll FirstRoll;
+//distinct Draw FirstDraw;
+//obs dieDrawn(FirstDraw) = D6;
+//query intRolled(FirstDraw,FirstRoll);
+
+// A.2)
+//distinct Roll FirstRoll;
+//distinct Draw FirstDraw;
+//obs dieDrawn(FirstDraw) = D12;
+//query intRolled(FirstDraw,FirstRoll);
+
+// B)
+/*
+distinct Roll r1,r2;
+distinct Draw d1,d2;
+obs dieDrawn(d1) = D6;
+obs dieDrawn(d2) = D12;
+query (intRolled(d1,r1) + intRolled(d2,r2)) == 11;
+*/
+
+// C.1)
+//distinct Draw d1,d2;
+//query (exists Draw da (exists Draw db
+//      (dieDrawn(da) == D6 & dieDrawn(db) == D12)));
+
+// C.2)
+//distinct Roll r1,r2;
+//distinct Draw d1,d2;
+//query (exists Draw da (exists Draw db
+//      (dieDrawn(da) == D20 & dieDrawn(db) != D20)));
+
+// D)
+/*
+distinct Roll r1,r2;
+distinct Draw d1,d2;
+query (exists Draw da (exists Draw db
+      (dieDrawn(da) == D6 & dieDrawn(db) == D12 &
+       (intRolled(d1,r1) + intRolled(d2,r2)) == 11)));
+*/
+
+// E)
+/*
+distinct Roll r1,r2;
+distinct Draw d1,d2;
+obs (intRolled(d1,r1) + intRolled(d2,r2)) = 11;
+query (exists Draw da (exists Draw db
+      (dieDrawn(da) == D6 & dieDrawn(db) == D12)));
+*/
+
+// F)
+distinct Roll r1[30],r2[30];
+distinct Draw d1,d2;
+
+//random Boolean LHS_bool(Integer i) ~ (intRolled(d1,r1[i]) + intRolled(d2,r2[i])) < 8;
+random Integer LHS(Draw da, Draw db, Roll ra, Roll rb) ~
+  if ((intRolled(da,ra) + intRolled(db,rb)) < 8) then 1 else 0;
+
+query (dieDrawn(d1) == D4 & dieDrawn(d2) == D4 &
+      (exists Roll ra  (exists Roll rb  (exists Roll rc
+      (exists Roll ra_ (exists Roll rb_ (exists Roll rc_ (exists Roll rz
+      (ra != rb & ra != rc & ra != rz &
+                  rb != rc & rb != rz &
+                             rc != rz &
+       intR
+
+/*       sum({
+         LHS(d1,d2,r1[i],r2[i]) for Integer i: i >= 0 & i < 30
+       }) == 3);
+*/
+
+
+/*
+type TS;
+distinct TS TS[31];
+distinct Rolls Rolls[30];*/
+//fixed Boolean LT(Integer x) = x < 8
+//type TSRoll;
+//distinct TSRoll TSRoll[30];
+//random Integer Rolled(TSRoll x, Timestep t) ~ Roll(Draw(t),t)
+
+/*
+query (exists Timestep t1 (exists Timestep t2 (exists Timestep t3 (forall Timestep t4 (
+  (t4 != t3) & (t4 != t2) & (t4 != t1) &
+  Roll(Draw(t1),t1) < 8 &
+  Roll(Draw(t2),t2) < 8 &
+  Roll(Draw(t3),t3) < 8 &
+  Roll(Draw(t4),t4) > 7 &
+  t1 >= @0 & t1 < @30 &
+  t2 >= @0 & t2 < @30 &
+  t3 >= @0 & t3 < @30 &
+  t4 >= @0 & t4 < @30)))));
+*/
+
+
+
+
