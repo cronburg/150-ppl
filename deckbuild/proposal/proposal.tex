@@ -58,16 +58,24 @@ This kind of question interests those searching for {\bf dominant
 strategies} in a particular instance of a deck building game.
 Which strategy is dominant relies heavily on the initial configuration
 of the game - which cards are chosen. For replayability purposes,
-this configuration is 
-  
-I see a hand of four coins with one buy.
-I see a hand of five coins and one buy.
+this configuration is chosen from a relatively large space of
+possible configurations.
+
+In this project (and subsequent paper) we hope to study the
+use of probabilistic programming languages (PPLs) to define generative models
+and infer meaning from observations of real-world outcomes as described
+by these models. In particular we plan to discuss the desired features
+of such languages by comparing the usability of {\bf BLOG} (Bayesian LOGic)
+and {\bf Church} in the context of our deck building game inference question.
+
+% Possible separate questions:  
+%I see a hand of four coins with one buy.
+%I see a hand of five coins and one buy.
+%feasibility
+
 \end{abstract}
 
 \section{Introduction}
-Introduction goes here.
-
-\section{First Section}
 
 Deck building games rely both on the underlying mechanics of the game itself,
 and the mechanics of the cards in the game. For instance, once a game design team
@@ -79,7 +87,7 @@ $25$ cards to choose $10$ from. As a result there are approximately $3.2$
 million variations of the base version of \emph{Dominion}. When the cards from
 all versions of \emph{Dominion} are included, we have:
 
-$$\log_{10}{\binom{200}{10}} = 16.35$$
+$$\log_{10}{\left[\binom{200}{10}\right]} = 16.35$$
 
 meaning there are upwards of $10^{16}$ possible game configurations. This
 magnitude of the observation state space lends the problem to the use
@@ -87,8 +95,11 @@ of machine learning techniques. While a particular instance in this space
 could be studied in great detail for dominant strategies, it is a lot more
 interesting to model what a dominant strategy looks like in general.
 
-Feeding this model into existing machine learning algorithms, we can search for
-instances of dominant strategies for arbitrary game configuration instances.
+Feeding a dominant strategy model into an existing machine learning algorithm,
+we can search for instances of dominant strategies for arbitrary game
+configuration instances.
+
+\section{Motivation}
 
 \section{Second Section}
 
