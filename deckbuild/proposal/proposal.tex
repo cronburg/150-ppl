@@ -80,14 +80,17 @@ and {\bf Church} in the context of our deck building game inference question.
 Deck building games rely both on the underlying mechanics of the game itself,
 and the mechanics of the cards in the game. For instance, once a game design team
 creating a new deck building game has determined the underlying mechanics of
-their game, they can then enrich its playability by designing 
+their game, they can then enrich its playability by designing a variety of cards
+to work within this framework.
 
+The existing deck building game we focus on for this project
+is {\bf Dominion}.\footnote{by \emph{Donald X. Vaccarino}}
 \emph{Dominion} was designed to be replayable. This was done by giving players
 $25$ cards to choose $10$ from. As a result there are approximately $3.2$
 million variations of the base version of \emph{Dominion}. When the cards from
 all versions of \emph{Dominion} are included, we have:
 
-$$\log_{10}{\left[\binom{200}{10}\right]} = 16.35$$
+$$\log_{10}{\left[\binom{200 \text{ cards}}{10 \text{ cards}}\right]} = 16.35$$
 
 meaning there are upwards of $10^{16}$ possible game configurations. This
 magnitude of the observation state space lends the problem to the use
@@ -99,19 +102,28 @@ Feeding a dominant strategy model into an existing machine learning algorithm,
 we can search for instances of dominant strategies for arbitrary game
 configuration instances.
 
-\section{Motivation}
+\section{Project Milestones}
 
-\section{Second Section}
+The following is a list of goals which, if achieved, would make the project
+a success to some extent:
 
-\section{Third Section}
+\begin{itemize}
+\item Create a model of dominant strategies for \emph{Dominion} in BLOG and / or Church.
+\item Learn what makes BLOG and Church good for probabilistic inference, and how they might
+      be improved or what support tools are desired.
+\item Answer our deck building inference question for a specific instance of \emph{Dominion}
+\item Answer our question for various instances of \emph{Dominion}
+\item Show that our answer(s) strongly correlate with what domain experts believe.
+\end{itemize}
 
-\section{Fourth Section}
+Some of these milestones may or may not be fully attainable in the time of this
+course. Further, we have a list of possible future work and goals:
 
-\subsection{Subsection of 4th section}
-\subsection{Another subsection}
-
-\section{Conclusion}
-Conclusion goes here.
+\begin{itemize}
+\item Find an instance of a previously undiscovered dominant strategy.
+\item Try using other inference systems.
+\item Development of domain specific (deck building) tools.
+\end{itemize}
 
 \begin{biblist}
 \end{biblist}
