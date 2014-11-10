@@ -1,0 +1,77 @@
+
+/*
+Supply cards:
+poorhouse,herbalist,coppersmith,monument,noblebrigand,youngwitch,
+embassy,haggler,outpost,rebuild,upgrade,copper,silver,gold,estate,
+duchy,province,curse
+*/
+
+/* Supply cards:
+cellar,market,militia,mine,moat,remodel,smithy,village,woodcutter,worshop,
+copper,silver,gold,estate,duchy,province
+*/
+
+// Cards for a particular instance:
+type Card;
+distinct Card cellar,market,militia,mine,moat,remodel,smithy,village,woodcutter,
+              workshop,copper,silver,gold,estate,duchy,province;
+
+// Fixed card cost based on card definitions:
+fixed Integer cost(Card c) = case c in {
+  cellar -> 2, market  -> 5, militia    -> 4, mine     -> 5, moat     -> 2, remodel -> 4,
+  smithy -> 4, village -> 3, woodcutter -> 3, workshop -> 3, copper   -> 0, silver  -> 3,
+  gold   -> 6, estate  -> 2, duchy      -> 5, province -> 8
+};
+
+// Value of a card is just a gaussian around the cost (+/- 1) for now:
+//   -- value is also time / turn# dependent
+random Real value(Card c, Timestep t) ~ Gaussian(cost(c), 1);
+
+// "fitness" of your deck at time "t"
+random Real fitness(Timestep t) ~
+  if t == @0 then (3 * value(estate) + 7 * value(copper)) // fitness of starting deck
+  else value(cardBought(t),t) + fitness(prev(t));
+
+
+random Card cardBought(Integer money, Timestep t) ~ 
+  if      (money < 0) then cardBought(0, t)
+  else if (money > 8) then cardBought(8, t)
+  else Categorical({c -> value(c,t) for Card c : cost(c) <= money});
+
+// TODO:
+type Supply Supply[16];
+obs Supply[0] = cellar;
+obs Supply[1] = market;
+...
+obs Supply[16] = province;
+
+type PileSize PS[16];
+obs PS[0] = 10;
+obs PS[1] = 10;
+...
+obs PS[16] = 8;
+
+random Integer cards_left(Card c, Timestep t) ~
+  if t == @0 then initial_supply_size(c)
+  else if cardBought(t) == c
+  then cards_left(c,t-1) - 1
+  else cards_left(c,t-1);
+
+/*
+  else case money in {
+    0 -> Categorical(copper -> %%, nothing -> %%),
+    1 -> cardBought(0),
+    2 -> if UniformReal(0,1) < %%
+         then Categorical(cellar -> %%)
+         else cardBought(1),
+    3 -> if UniformReal(0,1) < %%
+         then Categorical(
+    4 -> 
+    5 -> 
+    6 -> 
+    7 -> 
+    8 -> 
+case money in {
+  0  -> 
+*/
+

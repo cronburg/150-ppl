@@ -1,0 +1,87 @@
+
+type Card;
+distinct Card cellar,market,militia,mine,moat,remodel,smithy,village,woodcutter,
+              workshop,copper,silver,gold,estate,duchy,province,nothing;
+
+random Boolean win(Integer pts) ~
+  if (pts >= 40)                 then true // pts >= 40 is a certain win
+  else if (wincutoff(pts) < pts) then true // pts > wincutoff is a win
+  else false;                              // pts <= wincutoff is a loss
+
+// probability you win given the number of pts you have in your deck:
+//random Real wingauss(Integer pts) ~ Gaussian(40, 10);
+random Integer wincutoff(Integer pts) ~ UniformInt(25,40);
+
+// how long the game will last
+random Integer gl ~ UniformInt(15,25);
+random Timestep game_length ~ @1 * gl;
+
+// whether or not your deck contains card c at time t
+random Boolean deck_contains(Timestep t, Card c) ~
+  if t == @0 then case c in {
+    copper -> Categorical({true -> 1}),
+    estate -> Categorical({true -> 1})}
+  else if ((cardBought(t) == c) | deck_contains(prev(t),c))
+  then true
+  else false;
+
+// count how many times c is in your deck at time t
+random Integer count(Timestep t, Card c) ~
+  if t == @0 then
+    if c == copper      then 7 //Categorical({7 -> 1})
+    else if c == estate then 3 //Categorical({3 -> 1})}
+    else                     0
+  else if (cardBought(prev(t)) == c)
+    then count(prev(t),c) + 1
+    else count(prev(t),c);
+
+// what card you buy at time t given that you have 'money' to spend
+random Card cardBoughtM(Timestep t, Integer amt_money) ~
+  case amt_money in {
+    0 -> Categorical({copper  -> 1, nothing    -> 99}),
+    1 -> Categorical({copper  -> 1, nothing    -> 99}),
+    2 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 8}),
+    3 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4}),
+    4 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4, militia -> 6,
+                      remodel -> 9, smithy     -> 8}),
+    5 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4, militia -> 6,
+                      remodel -> 9, smithy     -> 8, duchy    -> 5, market  -> 12}),
+    6 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4, militia -> 6,
+                      remodel -> 9, smithy     -> 8, duchy    -> 5, market  -> 12, gold -> 16}),
+    7 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4, militia -> 6,
+                      remodel -> 9, smithy     -> 8, duchy    -> 5, market  -> 12, gold -> 16}),
+    8 -> Categorical({copper  -> 1, estate     -> 1, cellar   -> 1, moat    -> 1, nothing -> 2,
+                      village -> 4, woodcutter -> 4, workshop -> 4, militia -> 6,
+                      remodel -> 9, smithy     -> 8, duchy    -> 5, market  -> 12, gold -> 16,
+                     province -> 25})
+  };
+
+// what card you bought at time t
+random Card cardBought(Timestep t) ~
+  if      (money(prev(t)) < 0) then cardBoughtM(t,0)
+  else if (money(prev(t)) > 8) then cardBoughtM(t,8)
+  else cardBoughtM(t,money(prev(t)));
+
+// Amount of money you have in your hand on turn #t
+random Integer money(Timestep t) ~
+  toInt(sum({count(t,c) for Card c}) * 5 /
+        size({c for Card c}));
+  //sum({value(c)  * count(t,c) for Card c}) * 5 /
+  //size({value(c) * count(t,c) for Card c});
+
+random Boolean wins ~
+  win(count(game_length,estate) + count(game_length,duchy) * 3 +
+      count(game_length(),province) * 6);
+
+//obs cardBought(@0)   = cellar;
+//obs cardBought(@1)   = market;
+obs money(@2)        = 4;
+//obs game_length      = @20;
+obs wins             = true;
+query cardBought(@2);
+
