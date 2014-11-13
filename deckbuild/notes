@@ -1,0 +1,26 @@
+
+- Model Building
+  - choose, uniform, bindx/bind/>>=/certainly,return
+
+- Observation
+  - pfilter ("conditioning")
+
+- Queries
+  - expectation / probability
+  - sampling
+  - Maximum A Posterior (mode)
+
+- Inference Algorithms
+  - Graphical Models
+  - MonteCarlo methods
+- Mathematical Foundations
+  - Paradoxes
+  - Conditioning
+- Languages Survey
+  - Blog
+  - Church
+- Languages Survey
+  - Blog
+  - Church
+  - (Figaro, Venture ...)
+

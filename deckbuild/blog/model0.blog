@@ -1,0 +1,34 @@
+
+// Kingdom Cards:
+type KCard;
+//distinct KCard cellar,chapel,moat,chancellor,village,woodcutter,
+//               workshop,bureaucrat,feast,gardens,militia,moneylender,
+//               remodel,smith,spy,thief,throneroom,councilroom,
+//               festival,laboratory,library,market,witch,adventurer;
+
+distinct KCard cellar[10],market[10],militia[10],mine[10],moat[10],remodel[10],
+               smithy[10],village[10],woodcutter[10],workshop[10];
+
+// Supply Cards:
+type SCard;
+distinct SCard copper[70],silver[50],gold[30],estate[8],duchy[8],province[8];
+
+random Card player1draw
+
+
+
+
+// Trash Piles:
+type TPile;
+
+// Discard Piles:
+type DPile;
+distinct DPile DPile1[6]; // 6 cards in discard pile of player 1
+distinct DPile DPile2[6]; // 6 cards in discard pile of player 2
+
+// Supply Piles:
+type SPile;
+distinct S
+
+type KingdomPile;
+
