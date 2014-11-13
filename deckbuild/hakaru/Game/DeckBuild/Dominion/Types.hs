@@ -61,3 +61,46 @@ isTreasure :: Card -> Bool
 isTreasure c = elem c [COPPER,SILVER,GOLD]
 
 -- TODO: setup / write SYB or TemplateHaskell to auto-create the above data type definitions
+
+-- Data & type definitions:
+type Pile = [Card]
+type Piles = [(Card,Int)]
+
+data Player = Player { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile,
+                       inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int } deriving (Eq,Ord)
+
+instance Show Player where
+    show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
+                   numBuys = nb, numActions = na, amtMoney = am}) =
+        "    name   = " ++ show(n) ++ "\n" ++
+        "    hand   = " ++ show(h) ++ "\n" ++
+        "    inPlay = " ++ show(ip) ++ "\n" ++
+        "    deck   = " ++ show(d) ++ "\n" ++
+        "    dscrd  = " ++ show(dp) ++ "\n" ++
+        "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
+
+data Game = Game { p1 :: Player, p2 :: Player, trash :: Pile,
+                   supply :: [(Card,Int)], turn :: Int }
+                   --rng :: IO StdGen }
+
+instance Eq Game where
+    g == g' = all id $ [p1 g == p1 g', p2 g == p2 g', trash g == trash g', supply g == supply g', turn g == turn g']
+
+instance Ord Game where
+    g <= g' = turn g <= turn g'
+
+instance Show Game where
+    show (Game { p1 = p1, p2 = p2, trash = trash, supply = s, turn = turn }) = 
+        "Player1:\n" ++ (show p1) ++ "\n" ++
+        "Player2:\n" ++ (show p2) ++ "\n" ++
+        "Trash: " ++ (show trash) ++ "\n" ++
+        "Supply: " ++ (show s) ++ "\n" ++
+        "Turn #: " ++ (show turn) ++ "\n"
+
+-- Default player and game constructors:
+defaultPlayer = Player { name="INVALID_PLAYER_NAME", hand=[], inPlay=[], numActions=1, numBuys=1, amtMoney=0,
+                         deck=(replicate 7 COPPER) ++ (replicate 3 ESTATE), discardPile=[] }
+
+defaultGame = Game { p1=(defaultPlayer {name="p1"}), p2=(defaultPlayer {name="p2"}),
+                     trash=[], supply=[], turn=0 }
+
