@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+module Game.DeckBuild.Dominion.Types where
 import Data.Typeable
 
 -- Kingdom Card class type
