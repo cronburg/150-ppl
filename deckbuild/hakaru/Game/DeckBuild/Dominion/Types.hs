@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable,RankNTypes,FlexibleInstances #-}
 module Game.DeckBuild.Dominion.Types where
 import Data.Typeable
+import Control.Monad.State
 
 -- Kingdom Card class type
 -- (Eq a, Ord a, Typeable a, Show a, Enum a) => 
