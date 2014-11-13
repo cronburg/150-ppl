@@ -2,6 +2,8 @@
 module Game.DeckBuild.Dominion.Types where
 import Data.Typeable
 import Control.Monad.State
+import Data.List
+import Data.Ord (comparing)
 
 -- Kingdom Card class type
 -- (Eq a, Ord a, Typeable a, Show a, Enum a) => 
@@ -65,8 +67,31 @@ isTreasure c = elem c [COPPER,SILVER,GOLD]
 -- TODO: setup / write SYB or TemplateHaskell to auto-create the above data type definitions
 
 -- Data & type definitions:
-type Pile = [Card]
-type Piles = [(Card,Int)]
+data Pile  =
+    Pile     { cards      :: [Card]   -- The list of cards in this pile
+             , visibleTo  :: [Player] -- List of players this pile is visible to
+             -- Function for sorting this pile (e.g. for printing):
+             , sortPileBy :: Ord a => Maybe (Card -> Card -> a)
+             }
+instance Show Pile where
+  -- If sortPileBy is Just sPB, sort with sPB:
+  show (Pile { cards = cs, sortPileBy = Just sPB }) = show $ sortBy (comparing $ sPB) cs
+  -- Do not sort if the sortPileBy is Nothing:
+  show (Pile { cards = cs }) = show cs
+
+{-
+  -- Show cars in-a-pile in the order they are in the pile:
+  show (Pile p)    = show $ p
+  -- Show cards in-hand in categorically sorted order:
+  show (Hand h)    = show $ sortBy (\a b -> (fromEnum a) < (fromEnum b)) h
+  -- Show cards in-play in the order they were played:
+  show (PlayPile pp) = show $ pp
+-}
+
+data Supply = Supply [(Card,Int)]
+instance Show Supply where
+  -- Show supply piles in cost-sorted order:
+  show (Supply s) = show $ sortBy (comparing $ cost . fst) s
 
 data Player = Player { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile,
                        inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int,
@@ -81,14 +106,14 @@ instance Show Player where
     show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
                    numBuys = nb, numActions = na, amtMoney = am}) =
         "    name   = " ++ show(n) ++ "\n" ++
-        "    hand   = " ++ show(h) ++ "\n" ++
-        "    inPlay = " ++ show(ip) ++ "\n" ++
-        "    deck   = " ++ show(d) ++ "\n" ++
-        "    dscrd  = " ++ show(dp) ++ "\n" ++
+        "    hand   = " ++ show(h) ++ "\n" ++ -- show them in enum order
+        "    inPlay = " ++ show(ip) ++ "\n" ++ -- show them in the order they are played
+        "    deck   = " ++ show(d) ++ "\n" ++ -- show deck in actual order
+        "    dscrd  = " ++ show(dp) ++ "\n" ++ -- show dscrd pile in actual order
         "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
 
 data Game = Game { p1 :: Player, p2 :: Player, trash :: Pile,
-                   supply :: [(Card,Int)], turn :: Int, maxTurns :: Int }
+                   supply :: Supply, turn :: Int, maxTurns :: Int }
                    --rng :: IO StdGen }
 -- negative maxTurns means unlimited turns
 
@@ -102,23 +127,30 @@ instance Show Game where
     show (Game { p1 = p1, p2 = p2, trash = trash, supply = s, turn = turn }) = 
         "Player1:\n" ++ (show p1) ++ "\n" ++
         "Player2:\n" ++ (show p2) ++ "\n" ++
-        "Trash: " ++ (show trash) ++ "\n" ++
-        "Supply: " ++ (show s) ++ "\n" ++
+        "Trash: " ++ (show trash) ++ "\n" ++ -- show trash in order trashed
+        "Supply: " ++ (show s) ++ "\n" ++ -- show supply cards in order of cost
         "Turn #: " ++ (show turn) ++ "\n"
 
 nullHeuristic :: Game -> IO (Maybe Card)
 nullHeuristic = const (return Nothing)
 
+defaultPile = Pile
+  { cards      = []
+  , visibleTo  = []
+  , sortPileBy = Nothing
+  }
+
 -- Default player and game constructors:
-defaultPlayer = Player  { name="INVALID_PLAYER_NAME",
-                          hand=[], inPlay=[],
-                          numActions=1, numBuys=1, amtMoney=0,
-                          deck=(replicate 7 COPPER) ++ (replicate 3 ESTATE),
-                          discardPile=[],
-                          actHeuristic = nullHeuristic, -- default to always playing nothing
-                          buyHeuristic = nullHeuristic  -- default to always buying nothing
-                        }
+defaultPlayer = Player
+  { name="INVALID_PLAYER_NAME"
+  , hand=defaultPile, inPlay=defaultPile
+  , numActions=1, numBuys=1, amtMoney=0
+  , deck = defaultPile { cards = (replicate 7 COPPER) ++ (replicate 3 ESTATE) }
+  , discardPile = Pile []
+  , actHeuristic = nullHeuristic -- default to always playing nothing
+  , buyHeuristic = nullHeuristic -- default to always buying nothing
+  }
 
 defaultGame = Game { p1=(defaultPlayer {name="p1"}), p2=(defaultPlayer {name="p2"}),
-                     trash=[], supply=[], turn=0, maxTurns=100 }
+                     trash=Pile [], supply=Supply [], turn=0, maxTurns=100 }
 

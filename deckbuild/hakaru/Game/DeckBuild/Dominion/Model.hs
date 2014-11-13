@@ -154,25 +154,6 @@ playMoney = do
     let newAmtMoney = ((amtMoney . p1) g) + (countMoney newInPlay)
     put $ g { p1 = (p1 g) { inPlay = newInPlay, hand = newHand, amtMoney = newAmtMoney } }
 
-
--- TODO: Factor this (or something like it...) out into the client code
--- Whether or not player #1 wants to buy a card during this buy phase:
-wantToBuy :: Game -> IS.Measure Bool
-wantToBuy g = do
-    let m = (amtMoney . p1) g
-    if m >= 8 then do return True
-    else do
-        bool <- case m of
-            0 -> uncnd $ categorical $ [(True,5),  (False,95)]
-            1 -> uncnd $ categorical $ [(True,10), (False,90)]
-            2 -> uncnd $ categorical $ [(True,50), (False,50)]
-            3 -> uncnd $ categorical $ [(True,65), (False,35)]
-            4 -> uncnd $ categorical $ [(True,80), (False,20)]
-            5 -> uncnd $ categorical $ [(True,90), (False,10)]
-            6 -> uncnd $ categorical $ [(True,97), (False,3)]
-            7 -> uncnd $ categorical $ [(True,97), (False,3)]
-        return bool
-
 -- Decrements the number of buys player #1 has by n
 decrBuys :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => Int -> m ()
 decrBuys n = do
