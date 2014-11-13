@@ -1,12 +1,14 @@
+{-# LANGUAGE DeriveDataTypeable,RankNTypes,FlexibleInstances,FlexibleContexts,KindSignatures #-}
 module Game.DeckBuild.Dominion.Model where
-import Data.List
-import Data.Default.Class
-import Control.Lens
+--import Data.List
+--import Data.Default.Class
+--import Control.Lens
 
 import Data.Typeable
-import Data.Dynamic
-import Control.Monad
-import Control.Monad.Trans
+--import Data.Dynamic
+--import Control.Monad
+--import Control.Monad.Trans
+
 import System.Random
 
 --import Data.Random.Extras
@@ -17,10 +19,11 @@ import Language.Hakaru.Metropolis
 import Language.Hakaru.Types -- Discrete
 import Language.Hakaru.Distribution
 
+import Game.DeckBuild.Dominion.Types
+import Control.Monad.State
+
 fI = fromIntegral
 rTF = realToFrac
-
-import Game.DeckBuild.Dominion.Types
 
 -- Importance Sampler macros:
 sample1 :: (Show a, Ord a) => IS.Measure a -> [Cond] -> IO a
@@ -33,7 +36,10 @@ sampleN n fncn conds = do
     t <- IS.sample fncn conds
     return $ take n $ map fst t
 
+uncnd :: Typeable a => Dist a -> IS.Measure a
 uncnd = IS.unconditioned
+
+cnd :: Typeable a => Dist a -> IS.Measure a
 cnd  = IS.conditioned
 
 -- Whether or not the given Card is buy-able in the given supply :: [(Card,Int)]
@@ -57,9 +63,9 @@ bestBuy g = do
 -- Get a uniform int on a mn-closed mx-open interval [mn,mx)
 uniformInt :: Int -> Int -> IS.Measure Int
 uniformInt mn' mx' = do
-    let (mn,mx) = (fI mn', fI mx')
-    dbl <- uncnd $ uniform mn mx
-    if (dbl == mx) then return $ truncate mx
+    let (mn,mx) = (fI mn', fI mx') :: (Double,Double)
+    dbl <- (uncnd $ uniform mn mx) :: IS.Measure Double
+    if ((==) dbl mx) then return $ truncate mx
     else return $ floor dbl
 
 -- Shuffling using hakaru:
@@ -76,6 +82,7 @@ shuffleCards' d = do
 
 -- Takes all of player #1's discarded cards and shuffles them back into her deck:
 --shuffle :: forall m. MonadState Game m => m ()
+shuffleCards :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleCards = do
     g <- get
     newDeck <- liftIO $ shuffleCards' $ ((discardPile . p1) g) ++ ((deck . p1) g)
@@ -83,6 +90,7 @@ shuffleCards = do
 
 -- Player #1 draws n cards from her deck
 --draw :: Int -> State (GameState Game) ()
+draw :: forall (m :: * -> *) a. (MonadState Game m, MonadIO m, Num a) => Int -> m a
 draw 0 = return 0
 draw n = do
     g <- get
@@ -97,23 +105,27 @@ draw n = do
                 draw $ n - 1
 
 -- Player #1 discards all remaining cards from her hand and play
+discard :: forall (m :: * -> *). MonadState Game m => m ()
 discard = do
     g <- get
     let newDiscard = (hand . p1) g ++ (inPlay . p1) g ++ (discardPile . p1) g
     put $ g { p1 = (p1 g) { hand=[], inPlay=[], discardPile=newDiscard} }
 
 -- Player #1 and #2 swap places (i.e. p1 == current player)
+swapPlayers :: forall (m :: * -> *). MonadState Game m => m ()
 swapPlayers = do
     g <- get
     put $ g { p1 = p2 g, p2 = p1 g }
 
 -- TODO: Heuristic for which actions to play? Need more card information to do this...
+actionPhase :: forall (m :: * -> *). MonadState Game m => m ()
 actionPhase = do
     return ()
 
 findAndDecr c (c',cnt') (c'',cnt'') = if c'' == c then (c'',cnt'' - 1) else (c',cnt')
 
 -- Player #1 buys card c, removing one from the supply and putting into her discard pile
+buyCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
 buyCard c = do
     g <- get
     let (c0,cnt0):ss = supply g
@@ -133,6 +145,7 @@ countMoney (GOLD:xs)   = 3 + countMoney xs
 countMoney (x:xs)      = countMoney xs
 
 -- Player #1 players all of her money:
+playMoney :: forall (m :: * -> *). MonadState Game m => m ()
 playMoney = do
     g <- get
     let newInPlay   = (filterMoney    $ (hand . p1) g) ++ (inPlay . p1) g
@@ -143,6 +156,7 @@ playMoney = do
 
 
 -- Whether or not player #1 wants to buy a card during this buy phase:
+wantToBuy :: Game -> IS.Measure Bool
 wantToBuy g = do
     let m = (amtMoney . p1) g
     if m >= 8 then do return True
@@ -159,6 +173,7 @@ wantToBuy g = do
         return bool
 
 -- TODO: Heuristic for which cards to buy.
+buyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 buyPhase = do
     playMoney
     g <- get
@@ -171,6 +186,7 @@ buyPhase = do
         return ()
 
 -- Executes all phases of player #1's turn:
+takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 takeTurn = do
     actionPhase
     buyPhase
@@ -189,15 +205,19 @@ _endCndn 2 _ = True                         -- Found two stacks empty - game ove
 _endCndn n ((c,0):cs) = _endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
 _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse on n
 
+gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
     return $ _endCndn 0 (supply g)
 
+
+shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleDrawSwap = do
     shuffleCards
     draw 5
     swapPlayers
 
+runGameLoop :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 runGameLoop = do
     takeTurn
     swapPlayers
@@ -206,9 +226,9 @@ runGameLoop = do
     else runGameLoop
 
 -- Run the game:
+runGame :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 runGame = do
     shuffleDrawSwap
     shuffleDrawSwap
     runGameLoop
-
 

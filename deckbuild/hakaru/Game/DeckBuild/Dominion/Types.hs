@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable,RankNTypes,FlexibleInstances #-}
 module Game.DeckBuild.Dominion.Types where
 import Data.Typeable
 
