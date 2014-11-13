@@ -155,7 +155,7 @@ playMoney = do
     put $ g { p1 = (p1 g) { inPlay = newInPlay, hand = newHand, amtMoney = newAmtMoney } }
 
 
-
+-- TODO: Factor this (or something like it...) out into the client code
 -- Whether or not player #1 wants to buy a card during this buy phase:
 wantToBuy :: Game -> IS.Measure Bool
 wantToBuy g = do
@@ -173,10 +173,30 @@ wantToBuy g = do
             7 -> uncnd $ categorical $ [(True,97), (False,3)]
         return bool
 
+-- Decrements the number of buys player #1 has by n
+decrBuys :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => Int -> m ()
+decrBuys n = do
+  g <- get
+  put $ g { p1 = (p1 g) { numBuys = (numBuys . p1) g - n } }
+
 -- TODO: Heuristic for which cards to buy.
 buyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 buyPhase = do
-    playMoney
+  g <- get
+  -- If no more buys, return, else ask player what card they want
+  if (numBuys . p1) g == 0 then return () else do
+    c' <- liftIO $ ((buyHeuristic . p1) g) g
+    decrBuys 1
+    -- Not really necessary, but doing it for safety since decrBuys affects the
+    -- state, and I might e.g. change how canBuy works in the future:
+    g' <- get
+    case c' of
+      -- If you can buy the card, buy it, else ignore the ignorant player trying to steal cards:
+      Just c  -> if canBuy g c then buyCard c >> buyPhase else return ()
+      -- Player said "I don't want anything" - end the buy phase:
+      Nothing -> return ()
+-- TODO: Factor this into the client code:
+{-
     g <- get
     wantACard <- liftIO $ sample1 (wantToBuy g) []
     if wantACard then do
@@ -185,11 +205,13 @@ buyPhase = do
         buyCard c
     else do
         return ()
+-}
 
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 takeTurn = do
     actionPhase
+    playMoney
     buyPhase
     discard
     draw 5
@@ -206,10 +228,12 @@ _endCndn 2 _  = True                        -- Found two stacks empty - game ove
 _endCndn n ((c,0):cs) = _endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
 _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse on n
 
+-- Game is over if ending condition is true, or turns ran out:
 gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
-    return $ _endCndn 0 (supply g)
+    return $ (_endCndn 0 (supply g)) ||
+             ((turn g >= 0) && (turn g > maxTurns g))
 
 shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleDrawSwap = do

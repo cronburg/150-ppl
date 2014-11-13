@@ -70,8 +70,8 @@ type Piles = [(Card,Int)]
 
 data Player = Player { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile,
                        inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int,
-                       actHeuristic :: Game -> Maybe Card, -- Ask player what action to play
-                       buyHeuristic :: Game -> Maybe Card  -- Ask player what card to buy
+                       actHeuristic :: Game -> IO (Maybe Card), -- Ask player what action to play
+                       buyHeuristic :: Game -> IO (Maybe Card)  -- Ask player what card to buy
                      }
 
 instance Eq Player where p1 == p2 = name p1 == name p2
@@ -88,8 +88,9 @@ instance Show Player where
         "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
 
 data Game = Game { p1 :: Player, p2 :: Player, trash :: Pile,
-                   supply :: [(Card,Int)], turn :: Int }
+                   supply :: [(Card,Int)], turn :: Int, maxTurns :: Int }
                    --rng :: IO StdGen }
+-- negative maxTurns means unlimited turns
 
 instance Eq Game where
     g == g' = all id $ [p1 g == p1 g', p2 g == p2 g', trash g == trash g', supply g == supply g', turn g == turn g']
@@ -105,16 +106,19 @@ instance Show Game where
         "Supply: " ++ (show s) ++ "\n" ++
         "Turn #: " ++ (show turn) ++ "\n"
 
+nullHeuristic :: Game -> IO (Maybe Card)
+nullHeuristic = const (return Nothing)
+
 -- Default player and game constructors:
 defaultPlayer = Player  { name="INVALID_PLAYER_NAME",
                           hand=[], inPlay=[],
                           numActions=1, numBuys=1, amtMoney=0,
                           deck=(replicate 7 COPPER) ++ (replicate 3 ESTATE),
                           discardPile=[],
-                          actHeuristic = const Nothing, -- default to always playing nothing
-                          buyHeuristic = const Nothing  -- default to always buying nothing
+                          actHeuristic = nullHeuristic, -- default to always playing nothing
+                          buyHeuristic = nullHeuristic  -- default to always buying nothing
                         }
 
 defaultGame = Game { p1=(defaultPlayer {name="p1"}), p2=(defaultPlayer {name="p2"}),
-                     trash=[], supply=[], turn=0 }
+                     trash=[], supply=[], turn=0, maxTurns=100 }
 
