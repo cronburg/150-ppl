@@ -1,4 +1,25 @@
 module Game.DeckBuild.Dominion.Model where
+import Data.List
+import Data.Default.Class
+import Control.Lens
+
+import Data.Typeable
+import Data.Dynamic
+import Control.Monad
+import Control.Monad.Trans
+import System.Random
+
+--import Data.Random.Extras
+import System.Random.Shuffle
+
+import qualified Language.Hakaru.ImportanceSampler as IS
+import Language.Hakaru.Metropolis
+import Language.Hakaru.Types -- Discrete
+import Language.Hakaru.Distribution
+
+fI = fromIntegral
+rTF = realToFrac
+
 import Game.DeckBuild.Dominion.Types
 
 -- Importance Sampler macros:
