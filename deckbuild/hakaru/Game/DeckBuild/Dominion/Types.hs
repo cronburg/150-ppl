@@ -69,7 +69,13 @@ type Pile = [Card]
 type Piles = [(Card,Int)]
 
 data Player = Player { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile,
-                       inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int } deriving (Eq,Ord)
+                       inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int,
+                       actHeuristic :: Game -> Maybe Card, -- Ask player what action to play
+                       buyHeuristic :: Game -> Maybe Card  -- Ask player what card to buy
+                     }
+
+instance Eq Player where p1 == p2 = name p1 == name p2
+instance Ord Player where p1 <= p2 = name p1 <= name p2
 
 instance Show Player where
     show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
@@ -100,8 +106,14 @@ instance Show Game where
         "Turn #: " ++ (show turn) ++ "\n"
 
 -- Default player and game constructors:
-defaultPlayer = Player { name="INVALID_PLAYER_NAME", hand=[], inPlay=[], numActions=1, numBuys=1, amtMoney=0,
-                         deck=(replicate 7 COPPER) ++ (replicate 3 ESTATE), discardPile=[] }
+defaultPlayer = Player  { name="INVALID_PLAYER_NAME",
+                          hand=[], inPlay=[],
+                          numActions=1, numBuys=1, amtMoney=0,
+                          deck=(replicate 7 COPPER) ++ (replicate 3 ESTATE),
+                          discardPile=[],
+                          actHeuristic = const Nothing, -- default to always playing nothing
+                          buyHeuristic = const Nothing  -- default to always buying nothing
+                        }
 
 defaultGame = Game { p1=(defaultPlayer {name="p1"}), p2=(defaultPlayer {name="p2"}),
                      trash=[], supply=[], turn=0 }
