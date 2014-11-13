@@ -199,10 +199,10 @@ takeTurn = do
 
 -- Whether or not the game is over for the given supply (n == # supply piles found empty already):
 _endCndn :: Int -> [(Card,Int)] -> Bool
+_endCndn n ((PROVINCE,0):_) = True          -- Province stack empty - game over
 _endCndn 0 [] = False                       -- No stacks empty - game not over
 _endCndn 1 [] = False                       -- One (non-PROVINCE) stack empty - game not over
-_endCndn n ((PROVINCE,0):_) = True          -- Province stack empty - game over
-_endCndn 2 _ = True                         -- Found two stacks empty - game over
+_endCndn 2 _  = True                        -- Found two stacks empty - game over
 _endCndn n ((c,0):cs) = _endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
 _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse on n
 
@@ -210,7 +210,6 @@ gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
     return $ _endCndn 0 (supply g)
-
 
 shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleDrawSwap = do
@@ -223,8 +222,10 @@ runGameLoop = do
     takeTurn
     swapPlayers
     g <- get
-    if ((turn g) == 100) then return ()
-    else runGameLoop
+    --if ((turn g) == 100) then return ()
+    over <- gameOver
+    if over then do return ()
+    else do runGameLoop
 
 -- Run the game:
 runGame :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
