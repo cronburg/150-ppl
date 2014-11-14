@@ -9,54 +9,59 @@ import Data.Ord (comparing)
 -- (Eq a, Ord a, Typeable a, Show a, Enum a) => 
 
 data Card =
-     -- Non-Kingdom cards:
-       COPPER | SILVER | GOLD | ESTATE | DUCHY | PROVINCE
-     -- Base cards:
-     | CELLAR      | CHAPEL     | MOAT    | CHANCELLOR | VILLAGE    | WOODCUTTER
-     | WORKSHOP    | BUREAUCRAT | FEAST   | GARDENS    | MILITIA    | MONEYLENDER
-     | REMODEL     | SMITHY     | SPY     | THIEF      | THRONEROOM | COUNCILROOM
-     | FESTIVAL    | LABORATORY | LIBRARY | MARKET     | MINE       | WITCH
-     | ADVENTURER
-     -- Intrigue cards:
-     | COURTYARD   | PAWN      | SECRETCHAMBER | GREATHALL | MASQUERADE | SHANTYTOWN
-     | STEWARD     | SWINDLER  | WISHINGWELL   | BARON     | BRIDGE     | CONSPIRATOR
-     | COPPERSMITH | IRONWORKS | MININGVILLAGE | SCOUT     | DUKE       | MINION
-     | SABOTEUR    | TORTURER  | TRADINGPOST   | TRIBUTE   | UPGRADE    | HAREM
-     | NOBLES deriving (Eq, Ord, Typeable, Show, Enum, Bounded)
+  -- Non-Kingdom cards:
+    COPPER | SILVER | GOLD | ESTATE | DUCHY | PROVINCE
+  -- Base cards:
+  | CELLAR      | CHAPEL     | MOAT    | CHANCELLOR | VILLAGE    | WOODCUTTER
+  | WORKSHOP    | BUREAUCRAT | FEAST   | GARDENS    | MILITIA    | MONEYLENDER
+  | REMODEL     | SMITHY     | SPY     | THIEF      | THRONEROOM | COUNCILROOM
+  | FESTIVAL    | LABORATORY | LIBRARY | MARKET     | MINE       | WITCH
+  | ADVENTURER
+  -- Intrigue cards:
+  | COURTYARD   | PAWN      | SECRETCHAMBER | GREATHALL | MASQUERADE | SHANTYTOWN
+  | STEWARD     | SWINDLER  | WISHINGWELL   | BARON     | BRIDGE     | CONSPIRATOR
+  | COPPERSMITH | IRONWORKS | MININGVILLAGE | SCOUT     | DUKE       | MINION
+  | SABOTEUR    | TORTURER  | TRADINGPOST   | TRIBUTE   | UPGRADE    | HAREM
+  | NOBLES deriving (Eq, Ord, Typeable, Show, Enum, Bounded)
 
 -- Alternative implentation using:
 -- cost c = (!!) [0, 3, 6, 2, ...] (fromEnum c)
 cost c = case c of
-    -- Non-Kingdom card costs:
-    COPPER -> 0;      SILVER -> 3;      GOLD -> 6;          ESTATE -> 2;        DUCHY -> 5;      PROVINCE -> 8
-    -- Base card costs:
-    CELLAR -> 2;      CHAPEL -> 2;      MOAT -> 2;          CHANCELLOR -> 3;    VILLAGE -> 3;    WOODCUTTER -> 3
-    WORKSHOP -> 3;    BUREAUCRAT -> 4;  FEAST -> 4;         GARDENS -> 4;       MILITIA -> 4;    MONEYLENDER -> 4
-    REMODEL -> 4;     SMITHY -> 4;      SPY -> 4;           THIEF -> 4;         THRONEROOM -> 4; COUNCILROOM -> 5
-    FESTIVAL -> 5;    LABORATORY -> 5;  LIBRARY -> 5;       MARKET -> 5;         MINE -> 5;       WITCH -> 5;
-    ADVENTURER -> 6
-    -- Intrigue card costs:
-    COURTYARD -> 2;   PAWN -> 2;        SECRETCHAMBER -> 2; GREATHALL -> 3; MASQUERADE -> 3; SHANTYTOWN -> 3
-    STEWARD -> 3;     SWINDLER -> 3;    WISHINGWELL -> 3;   BARON -> 4;     BRIDGE -> 4;     CONSPIRATOR -> 4;
-    COPPERSMITH -> 4; IRONWORKS -> 4;   MININGVILLAGE -> 4; SCOUT -> 4;     DUKE -> 5;       MINION -> 5;
-    SABOTEUR -> 5;    TORTURER -> 5;    TRADINGPOST -> 5;   TRIBUTE -> 5
-    UPGRADE -> 5;     HAREM -> 6;       NOBLES -> 6
+  -- Non-Kingdom card costs:
+  COPPER -> 0;      SILVER -> 3;      GOLD -> 6;          ESTATE -> 2;        DUCHY -> 5;      PROVINCE -> 8
+  -- Base card costs:
+  CELLAR -> 2;      CHAPEL -> 2;      MOAT -> 2;          CHANCELLOR -> 3;    VILLAGE -> 3;    WOODCUTTER -> 3
+  WORKSHOP -> 3;    BUREAUCRAT -> 4;  FEAST -> 4;         GARDENS -> 4;       MILITIA -> 4;    MONEYLENDER -> 4
+  REMODEL -> 4;     SMITHY -> 4;      SPY -> 4;           THIEF -> 4;         THRONEROOM -> 4; COUNCILROOM -> 5
+  FESTIVAL -> 5;    LABORATORY -> 5;  LIBRARY -> 5;       MARKET -> 5;         MINE -> 5;       WITCH -> 5;
+  ADVENTURER -> 6
+  -- Intrigue card costs:
+  COURTYARD -> 2;   PAWN -> 2;        SECRETCHAMBER -> 2; GREATHALL -> 3; MASQUERADE -> 3; SHANTYTOWN -> 3
+  STEWARD -> 3;     SWINDLER -> 3;    WISHINGWELL -> 3;   BARON -> 4;     BRIDGE -> 4;     CONSPIRATOR -> 4;
+  COPPERSMITH -> 4; IRONWORKS -> 4;   MININGVILLAGE -> 4; SCOUT -> 4;     DUKE -> 5;       MINION -> 5;
+  SABOTEUR -> 5;    TORTURER -> 5;    TRADINGPOST -> 5;   TRIBUTE -> 5
+  UPGRADE -> 5;     HAREM -> 6;       NOBLES -> 6
 
 -- ALL possible cards
 allCards :: [Card]
 allCards = [minBound..]
 
+-- Non-Kingdom Cards:
 nkCards = [COPPER,SILVER,GOLD,ESTATE,DUCHY,PROVINCE]
-bCards  = [CELLAR, CHAPEL, MOAT, CHANCELLOR, VILLAGE, WOODCUTTER
-         , WORKSHOP, BUREAUCRAT, FEAST, GARDENS, MILITIA, MONEYLENDER
-         , REMODEL, SMITHY, SPY, THIEF, THRONEROOM, COUNCILROOM
-         , FESTIVAL, LABORATORY, LIBRARY, MARKET, MINE, WITCH
-         , ADVENTURER]
-iCards  = [COURTYARD, PAWN, SECRETCHAMBER, GREATHALL, MASQUERADE, SHANTYTOWN
-         , STEWARD, SWINDLER, WISHINGWELL, BARON, BRIDGE, CONSPIRATOR
-         , COPPERSMITH, IRONWORKS, MININGVILLAGE, SCOUT, DUKE, MINION
-         , SABOTEUR, TORTURER, TRADINGPOST, TRIBUTE, UPGRADE, HAREM
-         , NOBLES]
+
+bCards  = -- Base Cards:
+  [CELLAR, CHAPEL, MOAT, CHANCELLOR, VILLAGE, WOODCUTTER
+  , WORKSHOP, BUREAUCRAT, FEAST, GARDENS, MILITIA, MONEYLENDER
+  , REMODEL, SMITHY, SPY, THIEF, THRONEROOM, COUNCILROOM
+  , FESTIVAL, LABORATORY, LIBRARY, MARKET, MINE, WITCH
+  , ADVENTURER]
+
+iCards = -- Intrigue Cards:
+  [COURTYARD, PAWN, SECRETCHAMBER, GREATHALL, MASQUERADE, SHANTYTOWN
+  , STEWARD, SWINDLER, WISHINGWELL, BARON, BRIDGE, CONSPIRATOR
+  , COPPERSMITH, IRONWORKS, MININGVILLAGE, SCOUT, DUKE, MINION
+  , SABOTEUR, TORTURER, TRADINGPOST, TRIBUTE, UPGRADE, HAREM
+  , NOBLES]
 
 isKingdom :: Card -> Bool
 isKingdom c = any (elem c) [bCards,iCards]
@@ -68,11 +73,11 @@ isTreasure c = elem c [COPPER,SILVER,GOLD]
 
 -- Data & type definitions:
 data Pile  =
-    Pile     { cards      :: [Card]   -- The list of cards in this pile
-             , visibleTo  :: [Player] -- List of players this pile is visible to
-             -- Function for sorting this pile (e.g. for printing):
-             , sortPileBy :: Ord a => Maybe (Card -> Card -> a)
-             }
+  Pile { cards      :: [Card]   -- The list of cards in this pile
+    , visibleTo  :: [Player] -- List of players this pile is visible to
+    -- Function for sorting this pile (e.g. for printing):
+    , sortPileBy :: Ord a => Maybe (Card -> Card -> a)
+    }
 instance Show Pile where
   -- If sortPileBy is Just sPB, sort with sPB:
   show (Pile { cards = cs, sortPileBy = Just sPB }) = show $ sortBy (comparing $ sPB) cs
@@ -93,43 +98,45 @@ instance Show Supply where
   -- Show supply piles in cost-sorted order:
   show (Supply s) = show $ sortBy (comparing $ cost . fst) s
 
-data Player = Player { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile,
-                       inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int,
-                       actHeuristic :: Game -> IO (Maybe Card), -- Ask player what action to play
-                       buyHeuristic :: Game -> IO (Maybe Card)  -- Ask player what card to buy
-                     }
+data Player = Player 
+  { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
+  , inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int
+  , actHeuristic :: Game -> IO (Maybe Card) -- Ask player what action to play
+  , buyHeuristic :: Game -> IO (Maybe Card) -- Ask player what card to buy
+  }
 
 instance Eq Player where p1 == p2 = name p1 == name p2
 instance Ord Player where p1 <= p2 = name p1 <= name p2
 
 instance Show Player where
-    show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
-                   numBuys = nb, numActions = na, amtMoney = am}) =
-        "    name   = " ++ show(n) ++ "\n" ++
-        "    hand   = " ++ show(h) ++ "\n" ++ -- show them in enum order
-        "    inPlay = " ++ show(ip) ++ "\n" ++ -- show them in the order they are played
-        "    deck   = " ++ show(d) ++ "\n" ++ -- show deck in actual order
-        "    dscrd  = " ++ show(dp) ++ "\n" ++ -- show dscrd pile in actual order
-        "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
+  show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
+               numBuys = nb, numActions = na, amtMoney = am}) =
+    "    name   = " ++ show(n) ++ "\n" ++
+    "    hand   = " ++ show(h) ++ "\n" ++ -- show them in enum order
+    "    inPlay = " ++ show(ip) ++ "\n" ++ -- show them in the order they are played
+    "    deck   = " ++ show(d) ++ "\n" ++ -- show deck in actual order
+    "    dscrd  = " ++ show(dp) ++ "\n" ++ -- show dscrd pile in actual order
+    "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
 
-data Game = Game { p1 :: Player, p2 :: Player, trash :: Pile,
-                   supply :: Supply, turn :: Int, maxTurns :: Int }
-                   --rng :: IO StdGen }
+data Game = Game
+  { p1 :: Player, p2 :: Player, trash :: Pile
+  , supply :: Supply, turn :: Int, maxTurns :: Int
+  }
 -- negative maxTurns means unlimited turns
 
 instance Eq Game where
-    g == g' = all id $ [p1 g == p1 g', p2 g == p2 g', trash g == trash g', supply g == supply g', turn g == turn g']
+  g == g' = all id $ [p1 g == p1 g', p2 g == p2 g', trash g == trash g', supply g == supply g', turn g == turn g']
 
 instance Ord Game where
-    g <= g' = turn g <= turn g'
+  g <= g' = turn g <= turn g'
 
 instance Show Game where
-    show (Game { p1 = p1, p2 = p2, trash = trash, supply = s, turn = turn }) = 
-        "Player1:\n" ++ (show p1) ++ "\n" ++
-        "Player2:\n" ++ (show p2) ++ "\n" ++
-        "Trash: " ++ (show trash) ++ "\n" ++ -- show trash in order trashed
-        "Supply: " ++ (show s) ++ "\n" ++ -- show supply cards in order of cost
-        "Turn #: " ++ (show turn) ++ "\n"
+  show (Game { p1 = p1, p2 = p2, trash = trash, supply = s, turn = turn }) = 
+    "Player1:\n" ++ (show p1) ++ "\n" ++
+    "Player2:\n" ++ (show p2) ++ "\n" ++
+    "Trash: " ++ (show trash) ++ "\n" ++ -- show trash in order trashed
+    "Supply: " ++ (show s) ++ "\n" ++ -- show supply cards in order of cost
+    "Turn #: " ++ (show turn) ++ "\n"
 
 nullHeuristic :: Game -> IO (Maybe Card)
 nullHeuristic = const (return Nothing)
