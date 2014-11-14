@@ -143,7 +143,7 @@ buyCard c = do
     let newSupply   = filter (\(c',_) -> c /= c') $ (piles . supply) g
     put $ g { supply=Supply { piles=newPilePair:newSupply }
             , p1 = (p1 g)
-              { discardPile = Pile
+              { discardPile = ((discardPile.p1) g)
                 { cards = c : ((cards . discardPile . p1) g)
                 }
               }
@@ -168,8 +168,8 @@ playMoney = do
     let newHand     = filterNotMoney $ (cards . hand . p1) g
     let newAmtMoney = ((amtMoney . p1) g) + (countMoney newInPlay)
     put $ g { p1 = (p1 g)
-              { inPlay = Pile { cards=newInPlay }
-              , hand   = Pile { cards=newHand }
+              { inPlay = ((inPlay.p1) g) { cards=newInPlay }
+              , hand   = ((hand.p1) g) { cards=newHand }
               , amtMoney = newAmtMoney
               }
             }
