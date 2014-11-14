@@ -12,7 +12,11 @@ kcards_init = [CELLAR,MARKET,MILITIA,MINE,MOAT,REMODEL,SMITHY,VILLAGE,WOODCUTTER
 supply_init = (map (\c -> (c,10)) kcards_init) ++ nksupply_init
 
 -- The default game with the default set of cards described in the Dominion rulebook:
-defaultBaseGame = defaultGame { supply = supply_init }
+defaultBaseGame = defaultGame
+  { supply = Pile {
+      cards = supply_init
+    }
+  }
 
 --test0 :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m Game
 test0 :: MonadIO m => m Game

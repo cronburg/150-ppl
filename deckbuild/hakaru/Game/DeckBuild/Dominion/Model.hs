@@ -44,12 +44,12 @@ cnd :: Typeable a => Dist a -> IS.Measure a
 cnd  = IS.conditioned
 
 -- Whether or not the given Card is buy-able in the given supply :: [(Card,Int)]
-canBuySupply :: Supply -> Card -> Bool
-canBuySupply (Supply []) c = False
-canBuySupply (Supply ((c',cnt'):xs)) c = (c' == c && cnt' > 0) || (canBuySupply (Supply xs) c)
+canBuySupply :: [(Card,Int)] -> Card -> Bool
+canBuySupply [] c = False
+canBuySupply ((c',cnt'):xs) c = (c' == c && cnt' > 0) || (canBuySupply xs c)
 
 canBuy :: Game -> Card -> Bool
-canBuy g c = ((cost c) <= (amtMoney . p1) g) && (canBuySupply (supply g) c)
+canBuy g c = ((cost c) <= (amtMoney . p1) g) && (canBuySupply ((piles . supply) g) c)
 
 -- Perceived value of a card c if player #1 in game g were to buy it
 cardValue :: Game -> Card -> Double
@@ -58,7 +58,7 @@ cardValue g c = fI $ cost c
 -- What card should be bought in game state g by player #1
 bestBuy :: Game -> IS.Measure Card
 bestBuy g = do
-    card <- uncnd $ categorical $ [(c, cardValue g c) | c <- ((map fst) . supply) g, canBuy g c]
+    card <- uncnd $ categorical $ [(c, cardValue g c) | c <- ((map fst) . piles . supply) g, canBuy g c]
     return card
 
 -- Get a uniform int on a mn-closed mx-open interval [mn,mx)
@@ -86,31 +86,40 @@ shuffleCards' d = do
 shuffleCards :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleCards = do
     g <- get
-    newDeck <- liftIO $ shuffleCards' $ ((discardPile . p1) g) ++ ((deck . p1) g)
-    put g { p1 = ((p1 g) { deck=newDeck, discardPile=[] }) }
+    newDeck <- liftIO $ shuffleCards' $ ((cards . discardPile . p1) g) ++ ((cards . deck . p1) g)
+    put g { p1 = (p1 g)
+            { deck= ((deck.p1) g) {cards=newDeck}
+            , discardPile=((discardPile.p1) g) {cards=[]}
+            }
+          }
 
 -- Player #1 draws n cards from her deck
 --draw :: Int -> State (GameState Game) ()
-draw :: forall (m :: * -> *) a. (MonadState Game m, MonadIO m, Num a) => Int -> m a
-draw 0 = return 0
+draw :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => Int -> m ()
+draw 0 = return ()
 draw n = do
     g <- get
-    let cs = (deck . p1) g
+    let cs = (cards . deck . p1) g
     case () of
         _ | 0 == length cs -> do
                 shuffleCards
                 draw n
           | otherwise -> do
-                put (g { p1 = (p1 g) { hand = (head cs) : ((hand . p1) g),
-                                       deck = tail $ cs } })
+                put (g { p1 = (p1 g) { hand = ((hand.p1) g) { cards = (head cs) : ((cards . hand . p1) g) }
+                                     , deck = ((deck.p1) g) { cards = tail $ cs } }})
                 draw $ n - 1
 
 -- Player #1 discards all remaining cards from her hand and play
 discard :: forall (m :: * -> *). MonadState Game m => m ()
 discard = do
     g <- get
-    let newDiscard = (hand . p1) g ++ (inPlay . p1) g ++ (discardPile . p1) g
-    put $ g { p1 = (p1 g) { hand=[], inPlay=[], discardPile=newDiscard} }
+    let newDiscard = (cards . hand . p1) g ++ (cards . inPlay . p1) g ++ (cards . discardPile . p1) g
+    put $ g { p1 = (p1 g)
+              { hand        = ((hand.p1) g)        {cards=[]}
+              , inPlay      = ((inPlay.p1) g)      {cards=[]}
+              , discardPile = ((discardPile.p1) g) {cards=newDiscard}
+              }
+            }
 
 -- Player #1 and #2 swap places (i.e. p1 == current player)
 swapPlayers :: forall (m :: * -> *). MonadState Game m => m ()
@@ -129,10 +138,16 @@ findAndDecr c (c',cnt') (c'',cnt'') = if c'' == c then (c'',cnt'' - 1) else (c',
 buyCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
 buyCard c = do
     g <- get
-    let (c0,cnt0):ss = supply g
+    let (c0,cnt0):ss = (piles . supply) g
     let newPilePair = foldl (findAndDecr c) (c0,cnt0 - 1) ss        
-    let newSupply   = filter (\(c',_) -> c /= c') (supply g)
-    put $ g { supply=newPilePair:newSupply, p1 = (p1 g) { discardPile = c : ((discardPile . p1) g)} }
+    let newSupply   = filter (\(c',_) -> c /= c') $ (piles . supply) g
+    put $ g { supply=Supply { piles=newPilePair:newSupply }
+            , p1 = (p1 g)
+              { discardPile = Pile
+                { cards = c : ((cards . discardPile . p1) g)
+                }
+              }
+            }
 
 -- Gets only the treasure cards from a hand:
 filterMoney h = filter isTreasure h
@@ -149,10 +164,15 @@ countMoney (x:xs)      = countMoney xs
 playMoney :: forall (m :: * -> *). MonadState Game m => m ()
 playMoney = do
     g <- get
-    let newInPlay   = (filterMoney    $ (hand . p1) g) ++ (inPlay . p1) g
-    let newHand     = filterNotMoney $ (hand . p1) g
+    let newInPlay   = (filterMoney    $ (cards . hand . p1) g) ++ (cards . inPlay . p1) g
+    let newHand     = filterNotMoney $ (cards . hand . p1) g
     let newAmtMoney = ((amtMoney . p1) g) + (countMoney newInPlay)
-    put $ g { p1 = (p1 g) { inPlay = newInPlay, hand = newHand, amtMoney = newAmtMoney } }
+    put $ g { p1 = (p1 g)
+              { inPlay = Pile { cards=newInPlay }
+              , hand   = Pile { cards=newHand }
+              , amtMoney = newAmtMoney
+              }
+            }
 
 -- Decrements the number of buys player #1 has by n
 decrBuys :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => Int -> m ()
@@ -213,7 +233,7 @@ _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse o
 gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
-    return $ (_endCndn 0 (cards.supply g)) ||
+    return $ (_endCndn 0 ((piles.supply) g)) ||
              ((turn g >= 0) && (turn g > maxTurns g))
 
 shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()

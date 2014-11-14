@@ -176,4 +176,3 @@ defaultGame = Game
   , supply=defaultSupply
   , turn=0, maxTurns=100
   }
-
