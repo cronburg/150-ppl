@@ -72,17 +72,22 @@ isTreasure c = elem c [COPPER,SILVER,GOLD]
 -- TODO: setup / write SYB or TemplateHaskell to auto-create the above data type definitions
 
 -- Data & type definitions:
-data Pile  =
-  Pile { cards      :: [Card]   -- The list of cards in this pile
-    , visibleTo  :: [Player] -- List of players this pile is visible to
-    -- Function for sorting this pile (e.g. for printing):
-    , sortPileBy :: Ord a => Maybe (Card -> Card -> a)
-    }
+data Pile  = Pile
+  { cards      :: [Card]   -- The list of cards in this pile
+  , visibleTo  :: [Player] -- List of players this pile is visible to
+  -- Function for sorting this pile (e.g. for printing):
+  --, sortPileBy :: Ord a => Maybe (Card -> a)
+  , sortPileBy :: Maybe (Card -> Int)
+  }
+
 instance Show Pile where
   -- If sortPileBy is Just sPB, sort with sPB:
   show (Pile { cards = cs, sortPileBy = Just sPB }) = show $ sortBy (comparing $ sPB) cs
   -- Do not sort if the sortPileBy is Nothing:
   show (Pile { cards = cs }) = show cs
+
+instance Eq Pile where
+  p == p' = all id [cards p == cards p', visibleTo p == visibleTo p']
 
 {-
   -- Show cars in-a-pile in the order they are in the pile:
@@ -93,10 +98,12 @@ instance Show Pile where
   show (PlayPile pp) = show $ pp
 -}
 
-data Supply = Supply [(Card,Int)]
+data Supply = Supply
+  { piles :: [(Card,Int)]
+  } deriving (Eq)
 instance Show Supply where
   -- Show supply piles in cost-sorted order:
-  show (Supply s) = show $ sortBy (comparing $ cost . fst) s
+  show (Supply { piles=s }) = show $ sortBy (comparing $ cost . fst) s
 
 data Player = Player 
   { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
@@ -153,11 +160,20 @@ defaultPlayer = Player
   , hand=defaultPile, inPlay=defaultPile
   , numActions=1, numBuys=1, amtMoney=0
   , deck = defaultPile { cards = (replicate 7 COPPER) ++ (replicate 3 ESTATE) }
-  , discardPile = Pile []
+  , discardPile = defaultPile
   , actHeuristic = nullHeuristic -- default to always playing nothing
   , buyHeuristic = nullHeuristic -- default to always buying nothing
   }
 
-defaultGame = Game { p1=(defaultPlayer {name="p1"}), p2=(defaultPlayer {name="p2"}),
-                     trash=Pile [], supply=Supply [], turn=0, maxTurns=100 }
+defaultSupply = Supply
+  { piles=[]
+  }
+
+defaultGame = Game
+  { p1=(defaultPlayer {name="p1"})
+  , p2=(defaultPlayer {name="p2"})
+  , trash=defaultPile
+  , supply=defaultSupply
+  , turn=0, maxTurns=100
+  }
 

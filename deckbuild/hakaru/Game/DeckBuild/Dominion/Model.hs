@@ -44,9 +44,9 @@ cnd :: Typeable a => Dist a -> IS.Measure a
 cnd  = IS.conditioned
 
 -- Whether or not the given Card is buy-able in the given supply :: [(Card,Int)]
-canBuySupply :: [(Card,Int)] -> Card -> Bool
-canBuySupply [] c = False
-canBuySupply ((c',cnt'):xs) c = (c' == c && cnt' > 0) || (canBuySupply xs c)
+canBuySupply :: Supply -> Card -> Bool
+canBuySupply (Supply []) c = False
+canBuySupply (Supply ((c',cnt'):xs)) c = (c' == c && cnt' > 0) || (canBuySupply (Supply xs) c)
 
 canBuy :: Game -> Card -> Bool
 canBuy g c = ((cost c) <= (amtMoney . p1) g) && (canBuySupply (supply g) c)
@@ -213,7 +213,7 @@ _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse o
 gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
-    return $ (_endCndn 0 (supply g)) ||
+    return $ (_endCndn 0 (cards.supply g)) ||
              ((turn g >= 0) && (turn g > maxTurns g))
 
 shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
