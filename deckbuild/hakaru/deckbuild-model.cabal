@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Game.DeckBuild.Dominion.Types, Game.DeckBuild.Dominion.Model,
-                       Examples.First, Examples.GreedyPlayer
+                       Examples.First, Examples.GreedyPlayer, Game.DeckBuild.Dominion.Base
   -- other-modules:       
   other-extensions:    DeriveDataTypeable
   build-depends:       base >=4.7 && <4.8, data-default-class >=0.0 && <0.1, lens >=4.5 && <4.6,
