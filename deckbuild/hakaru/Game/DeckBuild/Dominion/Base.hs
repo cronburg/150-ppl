@@ -3,26 +3,8 @@
 module Game.DeckBuild.Dominion.Base where
 import Game.DeckBuild.Dominion.Types
 import Game.DeckBuild.Dominion.Engine
+import Game.DeckBuild.Dominion.Lib
 import Control.Monad.State
-
-
-addMoney :: forall (m :: * -> *). MonadState Game m => Int -> m ()
-addMoney n = get >>= (\g -> put $ g { p1 = (p1 g) { amtMoney = ((amtMoney . p1) g) + n } })
-
-addActions :: forall (m :: * -> *). MonadState Game m => Int -> m ()
-addActions n = get >>= (\g -> put $ g { p1 = (p1 g) { numActions = ((numActions . p1) g) + n } })
-
-addBuys :: forall (m :: * -> *). MonadState Game m => Int -> m ()
-addBuys n = get >>= (\g -> put $ g { p1 = (p1 g) { numBuys = ((numBuys.p1) g) + n } })
-
-nop :: forall (m :: * -> *). MonadState Game m => m ()
-nop = return ()
-
-gain :: forall (m :: * -> *). MonadState Game m => Card -> m ()
-gain c = buyCard c -- TODO - gain source and destination
-
-trashCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
-trashCard c = nop -- TODO - source and destination
 
 playCard :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 playCard c = case c of

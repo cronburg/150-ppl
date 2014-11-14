@@ -4,6 +4,7 @@
 module Examples.First where
 import Game.DeckBuild.Dominion.Types
 import Game.DeckBuild.Dominion.Engine
+import Game.DeckBuild.Dominion.Lib
 import Control.Monad.State
 
 -- Recommended initial game setup:

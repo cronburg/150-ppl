@@ -1,5 +1,6 @@
 module Examples.GreedyPlayer where
 
+import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Types
 import Game.Sample
