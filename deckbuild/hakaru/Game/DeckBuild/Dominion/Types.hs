@@ -118,12 +118,12 @@ instance Ord Player where p1 <= p2 = name p1 <= name p2
 instance Show Player where
   show (Player { name = n, hand = h, deck = d, discardPile = dp, inPlay = ip,
                numBuys = nb, numActions = na, amtMoney = am}) =
-    "    name   = " ++ show(n) ++ "\n" ++
-    "    hand   = " ++ show(h) ++ "\n" ++ -- show them in enum order
+    "    name   = " ++ show(n)  ++ "\n" ++
+    "    hand   = " ++ show(h)  ++ "\n" ++ -- show them in enum order
     "    inPlay = " ++ show(ip) ++ "\n" ++ -- show them in the order they are played
-    "    deck   = " ++ show(d) ++ "\n" ++ -- show deck in actual order
+    "    deck   = " ++ show(d)  ++ "\n" ++ -- show deck in actual order
     "    dscrd  = " ++ show(dp) ++ "\n" ++ -- show dscrd pile in actual order
-    "    buys=" ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
+    "    buys="     ++ show(nb) ++ ", actions=" ++ show(na) ++ ", money=" ++ show(am) ++ "\n"
 
 data Game = Game
   { p1 :: Player, p2 :: Player, trash :: Pile
@@ -139,11 +139,11 @@ instance Ord Game where
 
 instance Show Game where
   show (Game { p1 = p1, p2 = p2, trash = trash, supply = s, turn = turn }) = 
-    "Player1:\n" ++ (show p1) ++ "\n" ++
-    "Player2:\n" ++ (show p2) ++ "\n" ++
-    "Trash: " ++ (show trash) ++ "\n" ++ -- show trash in order trashed
-    "Supply: " ++ (show s) ++ "\n" ++ -- show supply cards in order of cost
-    "Turn #: " ++ (show turn) ++ "\n"
+    "Player1:\n" ++ (show p1)    ++ "\n" ++
+    "Player2:\n" ++ (show p2)    ++ "\n" ++
+    "Trash: "    ++ (show trash) ++ "\n" ++ -- show trash in order trashed
+    "Supply: "   ++ (show s)     ++ "\n" ++ -- show supply cards in order of cost
+    "Turn #: "   ++ (show turn)  ++ "\n"
 
 nullHeuristic :: Game -> IO (Maybe Card)
 nullHeuristic = const (return Nothing)
@@ -154,10 +154,12 @@ defaultPile = Pile
   , sortPileBy = Nothing
   }
 
+defaultHand = defaultPile { sortPileBy = Just fromEnum }
+
 -- Default player and game constructors:
 defaultPlayer = Player
   { name="INVALID_PLAYER_NAME"
-  , hand=defaultPile, inPlay=defaultPile
+  , hand=defaultHand, inPlay=defaultPile
   , numActions=1, numBuys=1, amtMoney=0
   , deck = defaultPile { cards = (replicate 7 COPPER) ++ (replicate 3 ESTATE) }
   , discardPile = defaultPile
