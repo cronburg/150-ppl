@@ -10,7 +10,7 @@ import Data.Ord (comparing)
 
 data Card =
   -- Non-Kingdom cards:
-    COPPER | SILVER | GOLD | ESTATE | DUCHY | PROVINCE
+    COPPER | SILVER | GOLD | CURSE | ESTATE | DUCHY | PROVINCE
   -- Base cards:
   | CELLAR      | CHAPEL     | MOAT    | CHANCELLOR | VILLAGE    | WOODCUTTER
   | WORKSHOP    | BUREAUCRAT | FEAST   | GARDENS    | MILITIA    | MONEYLENDER
