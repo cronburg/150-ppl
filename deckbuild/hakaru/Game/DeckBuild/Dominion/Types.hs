@@ -105,11 +105,17 @@ instance Show Supply where
   -- Show supply piles in cost-sorted order:
   show (Supply { piles=s }) = show $ sortBy (comparing $ cost . fst) s
 
+-- A heuristic (function) is supplied by client code to determine what
+-- action to perform based on the current game state. For now (a == Card)
+-- is the only interesting instance of this type (i.e. buy and action
+-- heuristics both produce a card).
+type Heuristic a = Game -> IO (Maybe a)
+
 data Player = Player 
   { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
   , inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int
-  , actHeuristic :: Game -> IO (Maybe Card) -- Ask player what action to play
-  , buyHeuristic :: Game -> IO (Maybe Card) -- Ask player what card to buy
+  , actHeuristic :: Heuristic Card -- Ask player what action to play
+  , buyHeuristic :: Heuristic Card -- Ask player what card to buy
   }
 
 instance Eq Player where p1 == p2 = name p1 == name p2
@@ -145,7 +151,7 @@ instance Show Game where
     "Supply: "   ++ (show s)     ++ "\n" ++ -- show supply cards in order of cost
     "Turn #: "   ++ (show turn)  ++ "\n"
 
-nullHeuristic :: Game -> IO (Maybe Card)
+nullHeuristic :: Heuristic a
 nullHeuristic = const (return Nothing)
 
 defaultPile = Pile

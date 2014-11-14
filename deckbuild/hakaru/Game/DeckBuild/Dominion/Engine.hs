@@ -10,13 +10,36 @@ import Game.DeckBuild.Dominion.Types
 import Game.Sample
 import Control.Monad.State
 
+doPhase numThing thingHeuristic addThing canDo doCard = do
+  g <- get
+  if (numThing . p1) g == 0 then return () else do
+    c' <- liftIO $ ((thingHeuristic.p1) g) g
+    addThing (-1)
+    g' <- get
+    case c' of
+      Just c  -> if canDo g c then doCard c >> 
+                 (doPhase numThing thingHeuristic addThing canDo doCard)
+                 else return ()
+      Nothing -> return ()
+
 -- TODO: Run actHeuristic of player #1:
-actionPhase :: forall (m :: * -> *). MonadState Game m => m ()
-actionPhase = do
+actionPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
+actionPhase = doPhase numActions actHeuristic addActions canPlay playCard
+{-
+  g <- get
+  if (numActions . p1) g == 0 then return () else do
+    c' <- liftIO $ ((actHeuristic . p1) g) g
+    addActions (-1)
+    g' <- get
+    case c' of
+      Just c  -> if canPlay g c then playCard c >> actionPhase else return ()
+      Nothing -> return ()
     return ()
+-}
 
 buyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
-buyPhase = do
+buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard
+{-
   g <- get
   -- If no more buys, return, else ask player what card they want
   if (numBuys . p1) g == 0 then return () else do
@@ -30,6 +53,7 @@ buyPhase = do
       Just c  -> if canBuy g c then buyCard c >> buyPhase else return ()
       -- Player said "I don't want anything" - end the buy phase:
       Nothing -> return ()
+-}
 
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
