@@ -15,21 +15,41 @@ import Control.Monad.State
 wantToBuy :: Game -> IS.Measure Bool
 wantToBuy g = do
     let m = (amtMoney . p1) g
-    if m >= 8 then do return True
+    if      m <= 2 then do return False
+    else if m >= 6 then do return True
     else do
         bool <- case m of
-            0 -> uncnd $ categorical $ [(True,5),  (False,95)]
-            1 -> uncnd $ categorical $ [(True,10), (False,90)]
-            2 -> uncnd $ categorical $ [(True,10), (False,90)]
             3 -> uncnd $ categorical $ [(True,65), (False,35)]
             4 -> uncnd $ categorical $ [(True,80), (False,20)]
             5 -> uncnd $ categorical $ [(True,90), (False,10)]
-            6 -> uncnd $ categorical $ [(True,97), (False,3)]
-            7 -> uncnd $ categorical $ [(True,97), (False,3)]
         return bool
 
 --instance MonadIO Maybe where
 --  liftIO = lift . liftIO
+
+-- Perceived value of a card c if player #1 in game g were to buy it
+cardValue :: Game -> Card -> Double
+--cardValue g c = fI $ cost c
+cardValue g c = case c of
+  GOLD -> 100; SILVER -> 80; MOAT -> 0; CELLAR -> 0;
+  PROVINCE -> 1000; otherwise -> 0
+
+wantCard :: Game -> Card -> Bool
+wantCard g c = case c of
+  SILVER    -> True
+  GOLD      -> True
+  DUCHY     -> True
+  PROVINCE  -> True
+  otherwise -> False
+
+-- What card should be bought in game state g by player #1
+bestBuy :: Game -> IS.Measure Card
+bestBuy g = do
+    card <- uncnd $ categorical $
+      [(c, cardValue g c) |                   -- Categorical value
+        c <- ((map fst) . piles . supply) g,  -- Cards in supply
+        wantCard g c && canBuy g c]           -- Buy conditions
+    return card
 
 greedyBuy :: Game -> IO (Maybe Card)
 greedyBuy g = do
