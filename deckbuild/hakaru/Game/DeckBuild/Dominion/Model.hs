@@ -5,43 +5,9 @@ module Game.DeckBuild.Dominion.Model where
 --import Data.Default.Class
 --import Control.Lens
 
-import Data.Typeable
---import Data.Dynamic
---import Control.Monad
---import Control.Monad.Trans
-
-import System.Random
-
---import Data.Random.Extras
-import System.Random.Shuffle
-
-import qualified Language.Hakaru.ImportanceSampler as IS
-import Language.Hakaru.Metropolis
-import Language.Hakaru.Types -- Discrete
-import Language.Hakaru.Distribution
-
 import Game.DeckBuild.Dominion.Types
+import Game.Sample
 import Control.Monad.State
-
-fI = fromIntegral
-rTF = realToFrac
-
--- Importance Sampler macros:
-sample1 :: (Show a, Ord a) => IS.Measure a -> [Cond] -> IO a
-sample1 fncn conds = do
-    s <- sampleN 1 fncn conds
-    return $ head s
-
-sampleN :: (Show a, Ord a) => Int -> IS.Measure a -> [Cond] -> IO [a]
-sampleN n fncn conds = do
-    t <- IS.sample fncn conds
-    return $ take n $ map fst t
-
-uncnd :: Typeable a => Dist a -> IS.Measure a
-uncnd = IS.unconditioned
-
-cnd :: Typeable a => Dist a -> IS.Measure a
-cnd  = IS.conditioned
 
 -- Whether or not the given Card is buy-able in the given supply :: [(Card,Int)]
 canBuySupply :: [(Card,Int)] -> Card -> Bool
@@ -51,32 +17,12 @@ canBuySupply ((c',cnt'):xs) c = (c' == c && cnt' > 0) || (canBuySupply xs c)
 canBuy :: Game -> Card -> Bool
 canBuy g c = ((cost c) <= (amtMoney . p1) g) && (canBuySupply ((piles . supply) g) c)
 
--- Get a uniform int on a mn-closed mx-open interval [mn,mx)
-uniformInt :: Int -> Int -> IS.Measure Int
-uniformInt mn' mx' = do
-    let (mn,mx) = (fI mn', fI mx') :: (Double,Double)
-    dbl <- (uncnd $ uniform mn mx) :: IS.Measure Double
-    if ((==) dbl mx) then return $ truncate mx
-    else return $ floor dbl
-
--- Shuffling using hakaru:
---shuffleC' [] d2 = return d2
---shuffleC' d1 d2 = do
---    idx <- uniformInt 0 (length d1)
---    return $ (d1 !! idx) : (removeNth idx d1)
---shuffleCards' d = sample1 (shuffleC' d []) []
-
--- Shuffling using System.Random:
-shuffleCards' d = do
-    g <- newStdGen
-    return $ shuffle' d (length d) g
-
 -- Takes all of player #1's discarded cards and shuffles them back into her deck:
 --shuffle :: forall m. MonadState Game m => m ()
 shuffleCards :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 shuffleCards = do
     g <- get
-    newDeck <- liftIO $ shuffleCards' $ ((cards . discardPile . p1) g) ++ ((cards . deck . p1) g)
+    newDeck <- liftIO $ shuffleList $ ((cards . discardPile . p1) g) ++ ((cards . deck . p1) g)
     put g { p1 = (p1 g)
             { deck= ((deck.p1) g) {cards=newDeck}
             , discardPile=((discardPile.p1) g) {cards=[]}
@@ -200,20 +146,20 @@ takeTurn = do
               turn = (turn g) + 1}
 
 -- Whether or not the game is over for the given supply (n == # supply piles found empty already):
-_endCndn :: Int -> [(Card,Int)] -> Bool
-_endCndn n ((PROVINCE,0):_) = True          -- Province stack empty - game over
-_endCndn 0 [] = False                       -- No stacks empty - game not over
-_endCndn 1 [] = False                       -- One (non-PROVINCE) stack empty - game not over
-_endCndn 2 [] = False                       -- Two (non-PROVINCE) stacks empty - game not over
-_endCndn 3 _  = True                        -- Three stacks empty - game over
-_endCndn n ((c,0):cs) = _endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
-_endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse on n
+endCndn :: Int -> [(Card,Int)] -> Bool
+endCndn n ((PROVINCE,0):_) = True          -- Province stack empty - game over
+endCndn 0 [] = False                       -- No stacks empty - game not over
+endCndn 1 [] = False                       -- One (non-PROVINCE) stack empty - game not over
+endCndn 2 [] = False                       -- Two (non-PROVINCE) stacks empty - game not over
+endCndn 3 _  = True                        -- Three stacks empty - game over
+endCndn n ((c,0):cs) = endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
+endCndn n ((c,_):cs) = endCndn n cs       -- First stack NOT empty - recurse on n
 
 -- Game is over if ending condition is true, or turns ran out:
 gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
     g <- get
-    return $ (_endCndn 0 ((piles.supply) g)) ||
+    return $ (endCndn 0 ((piles.supply) g)) ||
              ((turn g >= 0) && (turn g > maxTurns g))
 
 shuffleDrawSwap :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()

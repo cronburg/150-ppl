@@ -2,6 +2,7 @@ module Examples.GreedyPlayer where
 
 import Game.DeckBuild.Dominion.Model
 import Game.DeckBuild.Dominion.Types
+import Game.Sample
 import Examples.First
 
 import qualified Language.Hakaru.ImportanceSampler as IS
