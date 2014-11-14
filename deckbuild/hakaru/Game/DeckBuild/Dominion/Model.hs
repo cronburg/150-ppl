@@ -51,16 +51,6 @@ canBuySupply ((c',cnt'):xs) c = (c' == c && cnt' > 0) || (canBuySupply xs c)
 canBuy :: Game -> Card -> Bool
 canBuy g c = ((cost c) <= (amtMoney . p1) g) && (canBuySupply ((piles . supply) g) c)
 
--- Perceived value of a card c if player #1 in game g were to buy it
-cardValue :: Game -> Card -> Double
-cardValue g c = fI $ cost c
-
--- What card should be bought in game state g by player #1
-bestBuy :: Game -> IS.Measure Card
-bestBuy g = do
-    card <- uncnd $ categorical $ [(c, cardValue g c) | c <- ((map fst) . piles . supply) g, canBuy g c]
-    return card
-
 -- Get a uniform int on a mn-closed mx-open interval [mn,mx)
 uniformInt :: Int -> Int -> IS.Measure Int
 uniformInt mn' mx' = do
@@ -196,17 +186,6 @@ buyPhase = do
       Just c  -> if canBuy g c then buyCard c >> buyPhase else return ()
       -- Player said "I don't want anything" - end the buy phase:
       Nothing -> return ()
--- TODO: Factor this into the client code:
-{-
-    g <- get
-    wantACard <- liftIO $ sample1 (wantToBuy g) []
-    if wantACard then do
-        g <- get
-        c <- liftIO $ sample1 (bestBuy g) []
-        buyCard c
-    else do
-        return ()
--}
 
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
@@ -225,7 +204,8 @@ _endCndn :: Int -> [(Card,Int)] -> Bool
 _endCndn n ((PROVINCE,0):_) = True          -- Province stack empty - game over
 _endCndn 0 [] = False                       -- No stacks empty - game not over
 _endCndn 1 [] = False                       -- One (non-PROVINCE) stack empty - game not over
-_endCndn 2 _  = True                        -- Found two stacks empty - game over
+_endCndn 2 [] = False                       -- Two (non-PROVINCE) stacks empty - game not over
+_endCndn 3 _  = True                        -- Three stacks empty - game over
 _endCndn n ((c,0):cs) = _endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
 _endCndn n ((c,_):cs) = _endCndn n cs       -- First stack NOT empty - recurse on n
 
