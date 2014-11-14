@@ -17,7 +17,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Game.DeckBuild.Dominion.Types, Game.DeckBuild.Dominion.Model
+  exposed-modules:     Game.DeckBuild.Dominion.Types, Game.DeckBuild.Dominion.Engine
                      , Examples.First, Examples.GreedyPlayer, Game.DeckBuild.Dominion.Base
                      , Game.Sample
   -- other-modules:       

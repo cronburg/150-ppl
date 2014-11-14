@@ -2,7 +2,7 @@
              KindSignatures, ScopedTypeVariables #-}
 module Game.DeckBuild.Dominion.Base where
 import Game.DeckBuild.Dominion.Types
-import Game.DeckBuild.Dominion.Model
+import Game.DeckBuild.Dominion.Engine
 import Control.Monad.State
 
 

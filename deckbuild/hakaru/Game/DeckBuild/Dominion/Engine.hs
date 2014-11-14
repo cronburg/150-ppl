@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
              KindSignatures, ScopedTypeVariables #-}
-module Game.DeckBuild.Dominion.Model where
+module Game.DeckBuild.Dominion.Engine where
 --import Data.List
 --import Data.Default.Class
 --import Control.Lens
