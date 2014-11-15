@@ -5,8 +5,8 @@ import Game.DeckBuild.Dominion.Types
 import Game.DeckBuild.Dominion.Lib
 import Control.Monad.State
 
-doCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
-doCardEffects c = do
+baseCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
+baseCardEffects c = do
  case c of
   COPPER     -> addMoney 1
   SILVER     -> addMoney 2

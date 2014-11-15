@@ -4,7 +4,7 @@ import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Types
 import Game.Sample
-import Examples.First
+import Examples.Base
 
 import qualified Language.Hakaru.ImportanceSampler as IS
 import Language.Hakaru.Metropolis

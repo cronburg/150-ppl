@@ -8,12 +8,6 @@ module Game.DeckBuild.Dominion.Engine where
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Types
 
--- TODO: abstract out the `doCardEffects` so that it's not Kingdom-specific
---       (e.g. could put a `doCardEffects` field into the Game record type
---       and let the user specify their set of arbitrary card effects - user
---       would also be able to import Base card effects as needed in their own code)
-import Game.DeckBuild.Dominion.Base (doCardEffects)
-
 import Game.Sample
 import Control.Monad.State
 
@@ -62,7 +56,7 @@ buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard isSupply
 
 moneyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 moneyPhase = doPhase (countMoney . cards . hand) moneyHeuristic (const $ return ())
-                      canPlay (\c -> do { playCard c; doCardEffects c }) isTreasure
+                      canPlay playCard isTreasure
 
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()

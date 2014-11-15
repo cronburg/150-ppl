@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Game.DeckBuild.Dominion.Types, Game.DeckBuild.Dominion.Engine
-                     , Examples.First, Examples.GreedyPlayer, Game.DeckBuild.Dominion.Base
+                     , Examples.Base, Examples.GreedyPlayer, Game.DeckBuild.Dominion.Base
                      , Game.Sample, Game.DeckBuild.Dominion.Lib
   -- other-modules:       
   other-extensions:    DeriveDataTypeable

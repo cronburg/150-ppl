@@ -107,7 +107,7 @@ buyCard c = do
               }   
             }   
 
-playCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
+playCard :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 playCard c = do
   g <- get
   let c0:cs   = (cards . hand . p1) g
@@ -117,6 +117,7 @@ playCard c = do
             , inPlay = ((inPlay.p1) g) {cards=c : ((cards . inPlay . p1) g)}
             }
           }
+  (doCardEffects g) c
 
 -- Gets only the treasure cards from a hand:
 filterMoney h = filter isTreasure h

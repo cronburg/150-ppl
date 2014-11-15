@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable,RankNTypes,FlexibleInstances #-}
+{-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
+             KindSignatures, ScopedTypeVariables #-}
 module Game.DeckBuild.Dominion.Types where
 import Data.Typeable
 import Control.Monad.State
@@ -145,6 +146,7 @@ instance Show Player where
 data Game = Game
   { p1 :: Player, p2 :: Player, trash :: Pile
   , supply :: Supply, turn :: Int, maxTurns :: Int
+  , doCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
   }
 -- negative maxTurns means unlimited turns
 
@@ -200,4 +202,5 @@ defaultGame = Game
   , trash=defaultPile
   , supply=defaultSupply
   , turn=0, maxTurns=100
+  , doCardEffects=(\c -> return ())
   }

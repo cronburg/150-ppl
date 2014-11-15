@@ -1,10 +1,11 @@
 {-# LANGUAGE DeriveDataTypeable,RankNTypes,FlexibleInstances,
              FlexibleContexts,KindSignatures #-}
 
-module Examples.First where
+module Examples.Base where
 import Game.DeckBuild.Dominion.Types
 import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Lib
+import Game.DeckBuild.Dominion.Base (baseCardEffects)
 import Control.Monad.State
 
 -- Recommended initial game setup:
@@ -14,8 +15,8 @@ supply_init = (map (\c -> (c,10)) kcards_init) ++ nksupply_init
 
 -- The default game with the default set of cards described in the Dominion rulebook:
 defaultBaseGame = defaultGame
-  { supply = defaultSupply
-    { piles = supply_init }
+  { supply = defaultSupply { piles = supply_init }
+  , doCardEffects = baseCardEffects
   }
 
 --test0 :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m Game
