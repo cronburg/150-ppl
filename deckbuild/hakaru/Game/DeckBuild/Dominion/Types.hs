@@ -188,9 +188,7 @@ defaultPlayer = Player
   }
 
 defaultMoneyHeuristic :: Heuristic Card
-defaultMoneyHeuristic = (\g -> case find isTreasure ((cards.hand.p1) g)  of
-  Just c  -> return $ Just c
-  Nothing -> return Nothing)
+defaultMoneyHeuristic = (\g -> return $ find isTreasure ((cards.hand.p1) g))
 
 defaultSupply = Supply
   { piles=[]
