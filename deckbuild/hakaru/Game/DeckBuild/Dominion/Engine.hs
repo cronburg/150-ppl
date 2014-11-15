@@ -55,11 +55,14 @@ buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard
       Nothing -> return ()
 -}
 
+moneyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
+moneyPhase = doPhase (countMoney . cards . hand) moneyHeuristic (const $ return ()) canPlay playCard
+
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
 takeTurn = do
     actionPhase
-    playMoney
+    moneyPhase
     buyPhase
     discard
     draw 5

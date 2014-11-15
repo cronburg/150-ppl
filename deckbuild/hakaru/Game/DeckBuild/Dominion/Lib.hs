@@ -128,6 +128,7 @@ countMoney (SILVER:xs) = 2 + countMoney xs
 countMoney (GOLD:xs)   = 3 + countMoney xs
 countMoney (x:xs)      = countMoney xs
 
+{-
 -- Player #1 players all of her money:
 playMoney :: forall (m :: * -> *). MonadState Game m => m ()
 playMoney = do
@@ -141,6 +142,7 @@ playMoney = do
               , amtMoney = newAmtMoney
               }   
             }   
+-}
 
 -- Decrements the number of buys player #1 has by n
 decrBuys :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => Int -> m ()

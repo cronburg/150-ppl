@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
+{-# LANGUAGE Derive DataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
              KindSignatures, ScopedTypeVariables #-}
 module Game.DeckBuild.Dominion.Base where
 import Game.DeckBuild.Dominion.Types

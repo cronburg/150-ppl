@@ -114,8 +114,9 @@ type Heuristic a = Game -> IO (Maybe a)
 data Player = Player 
   { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
   , inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int
-  , actHeuristic :: Heuristic Card -- Ask player what action to play
-  , buyHeuristic :: Heuristic Card -- Ask player what card to buy
+  , actHeuristic   :: Heuristic Card -- Ask player what action to play
+  , moneyHeuristic :: Heuristic Card -- Ask player what money card to play
+  , buyHeuristic   :: Heuristic Card -- Ask player what card to buy
   }
 
 instance Eq Player where p1 == p2 = name p1 == name p2
@@ -169,9 +170,15 @@ defaultPlayer = Player
   , numActions=1, numBuys=1, amtMoney=0
   , deck = defaultPile { cards = (replicate 7 COPPER) ++ (replicate 3 ESTATE) }
   , discardPile = defaultPile
-  , actHeuristic = nullHeuristic -- default to always playing nothing
-  , buyHeuristic = nullHeuristic -- default to always buying nothing
+  , actHeuristic   = nullHeuristic -- default to always playing nothing
+  , buyHeuristic   = nullHeuristic -- default to always buying nothing
+  , moneyHeuristic = defaultMoneyHeuristic
   }
+
+defaultMoneyHeuristic :: Heuristic Card
+defaultMoneyHeuristic = (\g -> case find isTreasure ((cards.hand.p1) g)  of
+  Just c  -> return $ Just c
+  Nothing -> return Nothing)
 
 defaultSupply = Supply
   { piles=[]
