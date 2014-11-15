@@ -66,6 +66,7 @@ greedyBuy g = do
 greedyPlayer n = defaultPlayer
   { name = n
   , buyHeuristic = greedyBuy
+  , actHeuristic = greedyPlay
   }
 
 greedyGame = defaultBaseGame
