@@ -63,11 +63,21 @@ iCards = -- Intrigue Cards:
   , SABOTEUR, TORTURER, TRADINGPOST, TRIBUTE, UPGRADE, HAREM
   , NOBLES]
 
-isKingdom :: Card -> Bool
-isKingdom c = any (elem c) [bCards,iCards]
+actionCards = bCards ++ iCards
+isAction :: Card -> Bool
+isAction c = elem c actionCards
 
+kingdomCards = bCards ++ iCards
+isKingdom :: Card -> Bool
+isKingdom c = elem c kingdomCards
+
+treasureCards = [COPPER,SILVER,GOLD]
 isTreasure :: Card -> Bool
-isTreasure c = elem c [COPPER,SILVER,GOLD]
+isTreasure c = elem c treasureCards
+
+supplyCards = nub $ kingdomCards ++ nkCards
+isSupply :: Card -> Bool
+isSupply c = elem c supplyCards
 
 -- TODO: setup / write SYB or TemplateHaskell to auto-create the above data type definitions
 

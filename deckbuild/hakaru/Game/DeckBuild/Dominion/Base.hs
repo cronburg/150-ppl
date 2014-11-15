@@ -1,13 +1,13 @@
-{-# LANGUAGE Derive DataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
+{-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
              KindSignatures, ScopedTypeVariables #-}
 module Game.DeckBuild.Dominion.Base where
 import Game.DeckBuild.Dominion.Types
-import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Lib
 import Control.Monad.State
 
-playCard :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
-playCard c = case c of
+doCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
+doCardEffects c = do
+ case c of
   COPPER     -> addMoney 1
   SILVER     -> addMoney 2
   GOLD       -> addMoney 3

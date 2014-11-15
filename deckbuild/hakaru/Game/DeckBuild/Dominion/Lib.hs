@@ -103,6 +103,7 @@ buyCard c = do
               { discardPile = ((discardPile.p1) g)
                 { cards = c : ((cards . discardPile . p1) g)
                 }   
+              , amtMoney = ((amtMoney.p1) g) - (cost c)
               }   
             }   
 

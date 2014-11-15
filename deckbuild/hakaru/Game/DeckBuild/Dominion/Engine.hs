@@ -7,24 +7,29 @@ module Game.DeckBuild.Dominion.Engine where
 
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Types
+
+-- TODO: abstract out the `doCardEffects` so that it's not Kingdom-specific
+--       (e.g. could put a `doCardEffects` field into the Game record type
+--       and let the user specify their set of arbitrary card effects - user
+--       would also be able to import Base card effects as needed in their own code)
+import Game.DeckBuild.Dominion.Base (doCardEffects)
+
 import Game.Sample
 import Control.Monad.State
 
-doPhase numThing thingHeuristic addThing canDo doCard = do
+doPhase numThing thingHeuristic addThing canDo doCard isThing = do
   g <- get
   if (numThing . p1) g == 0 then return () else do
     c' <- liftIO $ ((thingHeuristic.p1) g) g
-    addThing (-1)
-    g' <- get
     case c' of
-      Just c  -> if canDo g c then doCard c >> 
-                 (doPhase numThing thingHeuristic addThing canDo doCard)
-                 else return ()
+      Just c  -> do
+        if (isThing c) && (canDo g c) then addThing (-1) >> doCard c else return ()
+        doPhase numThing thingHeuristic addThing canDo doCard isThing
       Nothing -> return ()
 
 -- TODO: Run actHeuristic of player #1:
 actionPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
-actionPhase = doPhase numActions actHeuristic addActions canPlay playCard
+actionPhase = doPhase numActions actHeuristic addActions canPlay playCard isAction
 {-
   g <- get
   if (numActions . p1) g == 0 then return () else do
@@ -38,7 +43,7 @@ actionPhase = doPhase numActions actHeuristic addActions canPlay playCard
 -}
 
 buyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
-buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard
+buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard isSupply
 {-
   g <- get
   -- If no more buys, return, else ask player what card they want
@@ -56,7 +61,8 @@ buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard
 -}
 
 moneyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
-moneyPhase = doPhase (countMoney . cards . hand) moneyHeuristic (const $ return ()) canPlay playCard
+moneyPhase = doPhase (countMoney . cards . hand) moneyHeuristic (const $ return ())
+                      canPlay (\c -> do { playCard c; doCardEffects c }) isTreasure
 
 -- Executes all phases of player #1's turn:
 takeTurn :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
