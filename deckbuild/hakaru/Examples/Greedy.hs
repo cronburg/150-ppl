@@ -1,4 +1,4 @@
-module Examples.GreedyPlayer where
+module Examples.Greedy where
 
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Engine
@@ -12,6 +12,8 @@ import Language.Hakaru.Types -- Discrete
 import Language.Hakaru.Distribution
 
 import Control.Monad.State
+import Data.List (maximumBy)
+import Data.Ord (comparing)
 
 -- Whether or not player #1 wants to buy a card during this buy phase:
 wantToBuy :: Game -> IS.Measure Bool
@@ -63,10 +65,17 @@ greedyBuy g = do
   else
     return $ Nothing
 
+greedyAct :: Game -> IO (Maybe Card)
+greedyAct g = do
+  let as = filter isAction $ (cards.hand.p1) g
+  case length as of
+    0 -> return Nothing
+    _ -> return $ Just $ maximumBy (comparing cost) as
+
 greedyPlayer n = defaultPlayer
   { name = n
   , buyHeuristic = greedyBuy
-  , actHeuristic = greedyPlay
+  , actHeuristic = greedyAct
   }
 
 greedyGame = defaultBaseGame
