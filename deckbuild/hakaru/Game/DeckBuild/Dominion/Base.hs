@@ -29,7 +29,7 @@ baseCardEffects c = do
   ESTATE     -> nop
   DUCHY      -> nop
   PROVINCE   -> nop
-  CELLAR     -> cellarEffect -- TODO: may discard
+  CELLAR     -> cellarEffect
   CHAPEL     -> nop -- TODO: may trash
   MOAT       -> draw 2
   CHANCELLOR -> addMoney 2 -- TODO: may discard

@@ -37,7 +37,7 @@ actionPhase = doPhase numActions actHeuristic addActions canPlay playCard isActi
 -}
 
 buyPhase :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m ()
-buyPhase = doPhase numBuys buyHeuristic addBuys canBuy buyCard isSupply
+buyPhase = doPhase numBuys buyHeuristic addBuys canBuy gain isSupply
 {-
   g <- get
   -- If no more buys, return, else ask player what card they want

@@ -26,9 +26,6 @@ addBuys n = get >>= (\g -> put $ g { p1 = (p1 g) { numBuys = ((numBuys.p1) g) + 
 nop :: forall (m :: * -> *). MonadState Game m => m ()
 nop = return ()
 
-gain :: forall (m :: * -> *). MonadState Game m => Card -> m ()
-gain c = buyCard c -- TODO - gain source and destination
-
 trashCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
 trashCard c = nop -- TODO - source and destination
 
@@ -105,8 +102,8 @@ swapPlayers = do
 findAndDecr c (c',cnt') (c'',cnt'') = if c'' == c then (c'',cnt'' - 1) else (c',cnt')
 
 -- Player #1 buys card c, removing one from the supply and putting into her discard pile
-buyCard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
-buyCard c = do
+gain :: forall (m :: * -> *). MonadState Game m => Card -> m ()
+gain c = do
     g <- get 
     let (c0,cnt0):ss = (piles . supply) g
     let newPilePair = foldl (findAndDecr c) (c0,cnt0 - 1) ss    
