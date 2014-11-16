@@ -1,4 +1,8 @@
 
+Recursive MCMC AI (AI does a montecarlo sampling for each
+possible move, getting back a distribution over WIN/LOSE - AI
+can then choose the move with the maxProb of WIN).
+
 - Model Building
   - choose, uniform, bindx/bind/>>=/certainly,return
 
