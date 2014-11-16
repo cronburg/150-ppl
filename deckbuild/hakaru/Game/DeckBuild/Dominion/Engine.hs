@@ -64,7 +64,7 @@ takeTurn = do
     actionPhase
     moneyPhase
     buyPhase
-    discard
+    discardAll
     draw 5
     g <- get
     put $ g { p1 = (p1 g) { numActions=1, numBuys=1, amtMoney=0 },

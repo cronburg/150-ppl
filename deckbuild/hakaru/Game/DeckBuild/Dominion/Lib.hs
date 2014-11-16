@@ -71,9 +71,22 @@ draw n = do
                                      , deck = ((deck.p1) g) { cards = tail $ cs } }}) 
                 draw $ n - 1 
 
+-- Player #1 discards a specific card from her hand
+-- TODO: Error handling when card is not in hand - probably use a Maybe
+discard :: forall (m :: * -> *). MonadState Game m => Card -> m ()
+discard c = do
+  g <- get
+  let newDiscard = c : (cards.discardPile.p1) g
+  let newHand    = delete c ((cards.hand.p1) g)
+  put $ g { p1 = (p1 g)
+            { hand        = ((hand.p1) g)        {cards=newHand}
+            , discardPile = ((discardPile.p1) g) {cards=newDiscard}
+            }
+          }
+
 -- Player #1 discards all remaining cards from her hand and play
-discard :: forall (m :: * -> *). MonadState Game m => m ()
-discard = do
+discardAll :: forall (m :: * -> *). MonadState Game m => m ()
+discardAll = do
     g <- get 
     let newDiscard = (cards . hand . p1) g ++ (cards . inPlay . p1) g ++ (cards . discardPile . p1) g
     put $ g { p1 = (p1 g)

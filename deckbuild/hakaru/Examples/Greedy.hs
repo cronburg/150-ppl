@@ -1,10 +1,13 @@
 module Examples.Greedy where
+-- TODO: Move this into an "AI" module under "Dominion"
 
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Types
 import Game.Sample.Sample
+import Haskell.Macros
 import Examples.Base
+
 
 import qualified Language.Hakaru.ImportanceSampler as IS
 import Language.Hakaru.Metropolis
@@ -35,7 +38,7 @@ wantToBuy g = do
 cardValue :: Game -> Card -> Double
 --cardValue g c = fI $ cost c
 cardValue g c = case c of
-  GOLD -> 100; SILVER -> 80; VILLAGE -> 60; MOAT -> 0; CELLAR -> 0;
+  GOLD -> 100; SILVER -> 80; VILLAGE -> 60; MOAT -> 0; CELLAR -> 1;
   PROVINCE -> 1000; otherwise -> 0
 
 wantCard :: Game -> Card -> Bool
@@ -46,6 +49,7 @@ wantCard g c = case c of
   PROVINCE  -> True
   VILLAGE   -> True
   SMITHY    -> True
+  CELLAR    -> True
   otherwise -> False
 
 -- What card should be bought in game state g by player #1
@@ -76,10 +80,24 @@ greedyAct g = do
          then return $ Just VILLAGE
          else return $ Just $ maximumBy (comparing cost) as
 
+cellarPick g = maybeHead $ filter isVictory ((cards.hand.p1) g)
+
+-- c' == the card which caused us to have to maybe pick a card
+greedyMayPick :: Game -> Card -> IO (Maybe Card)
+greedyMayPick g c' = return $ case c' of
+  CELLAR    -> cellarPick g
+  otherwise -> Nothing
+
+-- c' == the card which caused us to have to pick a card
+greedyMustPick :: Game -> Card -> IO Card
+greedyMustPick g c' = undefined
+
 greedyPlayer n = defaultPlayer
   { name = n
   , buyHeuristic = greedyBuy
   , actHeuristic = greedyAct
+  , mayPick      = greedyMayPick
+  , mustPick     = greedyMustPick
   }
 
 greedyGame = defaultBaseGame

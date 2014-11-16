@@ -1,9 +1,24 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
              KindSignatures, ScopedTypeVariables #-}
-module Game.DeckBuild.Dominion.Base where
+module Game.DeckBuild.Dominion.Base (baseCardEffects) where
 import Game.DeckBuild.Dominion.Types
 import Game.DeckBuild.Dominion.Lib
 import Control.Monad.State
+
+-- Discards any number of cards, returning the number of cards discarded
+cellarEffect' :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m Int
+cellarEffect' = do
+  g  <- get
+  c' <- liftIO $ ((mayPick.p1) g) g CELLAR
+  case c' of
+    Just c  -> if   elem c ((cards.hand.p1) g)
+               then discard c >> cellarEffect' >>= \n -> return $ n + 1
+               else return 0
+    Nothing -> return 0
+
+-- Discard any number of cards, then draw that many cards:
+cellarEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+cellarEffect = addActions 1 >> cellarEffect' >>= \n -> draw n
 
 baseCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 baseCardEffects c = do
@@ -14,7 +29,7 @@ baseCardEffects c = do
   ESTATE     -> nop
   DUCHY      -> nop
   PROVINCE   -> nop
-  CELLAR     -> nop -- TODO: may discard
+  CELLAR     -> cellarEffect -- TODO: may discard
   CHAPEL     -> nop -- TODO: may trash
   MOAT       -> draw 2
   CHANCELLOR -> addMoney 2 -- TODO: may discard

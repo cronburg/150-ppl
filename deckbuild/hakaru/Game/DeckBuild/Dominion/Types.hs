@@ -47,9 +47,6 @@ cost c = case c of
 allCards :: [Card]
 allCards = [minBound..]
 
--- Non-Kingdom Cards:
-nkCards = [COPPER,SILVER,GOLD,ESTATE,DUCHY,PROVINCE]
-
 bCards  = -- Base Cards:
   [CELLAR, CHAPEL, MOAT, CHANCELLOR, VILLAGE, WOODCUTTER
   , WORKSHOP, BUREAUCRAT, FEAST, GARDENS, MILITIA, MONEYLENDER
@@ -75,6 +72,13 @@ isKingdom c = elem c kingdomCards
 treasureCards = [COPPER,SILVER,GOLD]
 isTreasure :: Card -> Bool
 isTreasure c = elem c treasureCards
+
+victoryCards = [ESTATE,DUCHY,PROVINCE]
+isVictory :: Card -> Bool
+isVictory c = elem c victoryCards
+
+-- Non-Kingdom Cards:
+nkCards = treasureCards ++ victoryCards
 
 supplyCards = nub $ kingdomCards ++ nkCards
 isSupply :: Card -> Bool
@@ -120,14 +124,17 @@ instance Show Supply where
 -- action to perform based on the current game state. For now (a == Card)
 -- is the only interesting instance of this type (i.e. buy and action
 -- heuristics both produce a card).
-type Heuristic a = Game -> IO (Maybe a)
+type Heuristic a = Game -> IO a
+type PickHeuristic b a = Game -> b -> IO a
 
 data Player = Player 
   { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
   , inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int
-  , actHeuristic   :: Heuristic Card -- Ask player what action to play
-  , moneyHeuristic :: Heuristic Card -- Ask player what money card to play
-  , buyHeuristic   :: Heuristic Card -- Ask player what card to buy
+  , actHeuristic   :: Heuristic (Maybe Card) -- Ask player what action to play
+  , moneyHeuristic :: Heuristic (Maybe Card) -- Ask player what money card to play
+  , buyHeuristic   :: Heuristic (Maybe Card) -- Ask player what card to buy
+  , mayPick        :: PickHeuristic Card (Maybe Card) -- Ask player what card to pick e.g. during action
+  , mustPick       :: PickHeuristic Card Card
   }
 
 instance Eq Player where p1 == p2 = name p1 == name p2
@@ -164,7 +171,7 @@ instance Show Game where
     "Supply: "   ++ (show s)     ++ "\n" ++ -- show supply cards in order of cost
     "Turn #: "   ++ (show turn)  ++ "\n"
 
-nullHeuristic :: Heuristic a
+nullHeuristic :: Heuristic (Maybe a)
 nullHeuristic = const (return Nothing)
 
 defaultPile = Pile
@@ -184,10 +191,12 @@ defaultPlayer = Player
   , discardPile = defaultPile
   , actHeuristic   = nullHeuristic -- default to always playing nothing
   , buyHeuristic   = nullHeuristic -- default to always buying nothing
-  , moneyHeuristic = defaultMoneyHeuristic
+  , moneyHeuristic = defaultMoneyHeuristic -- play all money by default
+  , mayPick        = undefined
+  , mustPick       = undefined
   }
 
-defaultMoneyHeuristic :: Heuristic Card
+defaultMoneyHeuristic :: Heuristic (Maybe Card)
 defaultMoneyHeuristic = (\g -> return $ find isTreasure ((cards.hand.p1) g))
 
 defaultSupply = Supply
@@ -202,3 +211,4 @@ defaultGame = Game
   , turn=0, maxTurns=100
   , doCardEffects=(\c -> return ())
   }
+
