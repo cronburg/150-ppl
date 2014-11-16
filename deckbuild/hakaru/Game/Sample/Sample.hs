@@ -1,15 +1,17 @@
 {-# LANGUAGE DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
              KindSignatures, ScopedTypeVariables #-}
-module Game.Sample where
+module Game.Sample.Sample where
 -- Useful sampling functions used when playing games
 import qualified Language.Hakaru.ImportanceSampler as IS
-import Language.Hakaru.Metropolis
+import Language.Hakaru.Metropolis hiding (sample)
 import Language.Hakaru.Types -- Discrete
 import Language.Hakaru.Distribution
 
 import System.Random.Shuffle (shuffle')
 import System.Random (newStdGen)
 import Data.Typeable (Typeable)
+
+import Game.Sample.Hakaru
 
 fI = fromIntegral
 
@@ -21,7 +23,7 @@ sample1 fncn conds = do
 
 sampleN :: (Show a, Ord a) => Int -> IS.Measure a -> [Cond] -> IO [a]
 sampleN n fncn conds = do
-    t <- IS.sample fncn conds
+    t <- sample fncn conds
     return $ take n $ map fst t
 
 uncnd :: Typeable a => Dist a -> IS.Measure a

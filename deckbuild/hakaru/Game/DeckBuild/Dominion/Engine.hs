@@ -8,7 +8,7 @@ module Game.DeckBuild.Dominion.Engine where
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Types
 
-import Game.Sample
+import Game.Sample.Sample
 import Control.Monad.State
 
 doPhase numThing thingHeuristic addThing canDo doCard isThing = do

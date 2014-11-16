@@ -3,7 +3,7 @@ module Examples.Greedy where
 import Game.DeckBuild.Dominion.Lib
 import Game.DeckBuild.Dominion.Engine
 import Game.DeckBuild.Dominion.Types
-import Game.Sample
+import Game.Sample.Sample
 import Examples.Base
 
 import qualified Language.Hakaru.ImportanceSampler as IS
@@ -35,7 +35,7 @@ wantToBuy g = do
 cardValue :: Game -> Card -> Double
 --cardValue g c = fI $ cost c
 cardValue g c = case c of
-  GOLD -> 100; SILVER -> 80; MOAT -> 0; CELLAR -> 0;
+  GOLD -> 100; SILVER -> 80; VILLAGE -> 60; MOAT -> 0; CELLAR -> 0;
   PROVINCE -> 1000; otherwise -> 0
 
 wantCard :: Game -> Card -> Bool
@@ -44,6 +44,8 @@ wantCard g c = case c of
   GOLD      -> True
   DUCHY     -> True
   PROVINCE  -> True
+  VILLAGE   -> True
+  SMITHY    -> True
   otherwise -> False
 
 -- What card should be bought in game state g by player #1
@@ -70,7 +72,9 @@ greedyAct g = do
   let as = filter isAction $ (cards.hand.p1) g
   case length as of
     0 -> return Nothing
-    _ -> return $ Just $ maximumBy (comparing cost) as
+    _ -> if elem VILLAGE as
+         then return $ Just VILLAGE
+         else return $ Just $ maximumBy (comparing cost) as
 
 greedyPlayer n = defaultPlayer
   { name = n

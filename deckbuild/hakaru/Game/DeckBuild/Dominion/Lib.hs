@@ -11,7 +11,7 @@ module Game.DeckBuild.Dominion.Lib where
 
 import Game.DeckBuild.Dominion.Types
 import Control.Monad.State
-import Game.Sample
+import Game.Sample.Sample
 import Data.List (delete)
 
 addMoney :: forall (m :: * -> *). MonadState Game m => Int -> m ()
