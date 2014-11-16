@@ -20,6 +20,19 @@ cellarEffect' = do
 cellarEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
 cellarEffect = addActions 1 >> cellarEffect' >>= \n -> draw n
 
+-- Trash up to 4 cards
+-- n == # of cards trashed so far
+chapelEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Int -> m Int
+chapelEffect 4 = return 0
+chapelEffect n = do
+  g  <- get
+  c' <- liftIO $ ((mayPick.p1) g) g CHAPEL
+  case c' of
+    Just c  -> if   elem c ((cards.hand.p1) g)
+               then trashCard c >> chapelEffect (n + 1) >>= \n' -> return $ n' + 1
+               else return 0
+    Nothing -> return 0
+
 baseCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 baseCardEffects c = do
  case c of
@@ -30,7 +43,7 @@ baseCardEffects c = do
   DUCHY      -> nop
   PROVINCE   -> nop
   CELLAR     -> cellarEffect
-  CHAPEL     -> nop -- TODO: may trash
+  CHAPEL     -> chapelEffect 0 >> return ()
   MOAT       -> draw 2
   CHANCELLOR -> addMoney 2 -- TODO: may discard
   VILLAGE    -> draw 1 >> addActions 2

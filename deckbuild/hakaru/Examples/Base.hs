@@ -20,6 +20,7 @@ defaultBaseGame = defaultGame
   }
 
 --test0 :: forall (m :: * -> *). (MonadState Game m, MonadIO m) => m Game
+{-
 test0 :: MonadIO m => m Game
 test0 = execStateT (do {shuffleDrawSwap; shuffleDrawSwap }) defaultBaseGame
 
@@ -28,4 +29,5 @@ test1 = evalStateT gameOver defaultBaseGame
 
 test2 :: MonadIO m => m Game
 test2 = execStateT runGame defaultBaseGame
+-}
 
