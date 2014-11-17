@@ -33,6 +33,19 @@ chapelEffect n = do
                else return 0
     Nothing -> return 0
 
+-- +2 money, may put deck into discard pile
+chancellorEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+chancellorEffect = do
+  addMoney 2
+  g  <- get
+  c' <- liftIO $ ((mayPick.p1) g) g CHANCELLOR
+  case c' of
+    Just _  ->
+      put $ g { p1 = (p1 g)
+        { deck        = (deck.p1        $ g) { cards=[] }
+        , discardPile = (discardPile.p1 $ g) { cards=(cards.deck.p1 $ g) ++ (cards.discardPile.p1 $ g) } } }
+    Nothing -> return ()
+
 baseCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 baseCardEffects c = do
  case c of
@@ -45,7 +58,7 @@ baseCardEffects c = do
   CELLAR     -> cellarEffect
   CHAPEL     -> chapelEffect 0 >> return ()
   MOAT       -> draw 2
-  CHANCELLOR -> addMoney 2 -- TODO: may discard
+  CHANCELLOR -> chancellorEffect -- TODO: may discard
   VILLAGE    -> draw 1 >> addActions 2
   WOODCUTTER -> addBuys 1 >> addMoney 2
   WORKSHOP   -> nop -- TODO: ask gain card costing 4

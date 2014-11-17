@@ -85,8 +85,9 @@ cellarPick g = maybeHead $ filter isVictory ((cards.hand.p1) g)
 -- c' == the card which caused us to have to maybe pick a card
 greedyMayPick :: Game -> Card -> IO (Maybe Card)
 greedyMayPick g c' = return $ case c' of
-  CELLAR    -> cellarPick g
-  otherwise -> Nothing
+  CELLAR     -> cellarPick g -- pick a victory card in hand if exists
+  CHANCELLOR -> Just COPPER  -- any card triggers a discard deck
+  otherwise  -> Nothing
 
 -- c' == the card which caused us to have to pick a card
 greedyMustPick :: Game -> Card -> IO Card
