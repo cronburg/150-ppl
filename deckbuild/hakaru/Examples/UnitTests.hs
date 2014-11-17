@@ -16,8 +16,8 @@ import Test.HUnit hiding (test)
 test = runTestTT tests
 tests = TestList
   [ TestLabel "dMH" dmh0_test
-  , TestLabel "dMH" dmh0_test
-  , TestLabel "dMH" dmh0_test
+  , TestLabel "dMH" dmh1_test
+  , TestLabel "dMH" dmh2_test
   ]
 mkTest   s e r = TestCase $ assertEqual s e r
 mkTestIO s e r = TestCase $ assertEqual s e (unsafePerformIO r)
@@ -28,9 +28,14 @@ dMH = defaultMoneyHeuristic
 
 dmh0_result  = dMH $ dBG { p1 = (p1 dBG) { hand = ((hand.p1) dBG) {cards=[ESTATE,SILVER,COPPER]} } }
 dmh0_expects = Just SILVER
-dmh0_test   = mkTestIO "dMH" dmh0_expects dmh0_result
+dmh0_test    = mkTestIO "dMH" dmh0_expects dmh0_result
 
---dmh_test1 = dMH $ dBG { p1 = (p1 dBG) { hand = ((hand.p1) dBG) {cards=[ESTATE,SILVER]} } }
---dmh_test1 = dMH $ dBG { p1 = (p1 dBG) { hand = ((hand.p1) dBG) {cards=[COPPER]} } }
+dmh1_result  = dMH $ dBG { p1 = (p1 dBG) { hand = ((hand.p1) dBG) {cards=[ESTATE,SILVER]} } }
+dmh1_expects = Just SILVER
+dmh1_test    = mkTestIO "dMH" dmh1_expects dmh1_result
+
+dmh2_result  = dMH $ dBG { p1 = (p1 dBG) { hand = ((hand.p1) dBG) {cards=[COPPER]} } }
+dmh2_expects = Just COPPER
+dmh2_test    = mkTestIO "dMH" dmh2_expects dmh2_result
 
 
