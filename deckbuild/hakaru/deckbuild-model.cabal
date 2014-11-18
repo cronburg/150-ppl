@@ -20,6 +20,7 @@ library
   exposed-modules:     Game.DeckBuild.Dominion.Types, Game.DeckBuild.Dominion.Engine
                      , Examples.Base, Examples.Greedy, Game.DeckBuild.Dominion.Base
                      , Game.Sample.Sample, Game.DeckBuild.Dominion.Lib, Examples.UnitTests
+                     , Examples.GreedySampler
   -- other-modules:       
   other-extensions:    DeriveDataTypeable, RankNTypes, FlexibleInstances, FlexibleContexts,
                        KindSignatures, ScopedTypeVariables, NoMonomorphismRestriction,

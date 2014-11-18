@@ -46,6 +46,57 @@ chancellorEffect = do
         , discardPile = (discardPile.p1 $ g) { cards=(cards.deck.p1 $ g) ++ (cards.discardPile.p1 $ g) } } }
     Nothing -> return ()
 
+workshopEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+workshopEffect = undefined
+
+bureaucratEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+bureaucratEffect = undefined 
+
+feastEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+feastEffect = undefined
+ 
+militiaEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+militiaEffect = undefined 
+
+moneylenderEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+moneylenderEffect = undefined 
+
+remodelEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+remodelEffect = undefined 
+
+smithyEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+smithyEffect = undefined
+ 
+spyEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+spyEffect = undefined 
+
+thiefEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+thiefEffect = undefined
+
+throneRoomEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+throneRoomEffect = undefined 
+
+councilRoomEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+councilRoomEffect = undefined
+ 
+laboratoryEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+laboratoryEffect = undefined 
+
+libraryEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+libraryEffect = undefined
+ 
+marketEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+marketEffect = undefined
+ 
+mineEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+mineEffect = undefined
+ 
+witchEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+witchEffect = undefined
+ 
+adventurerEffect :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => m ()
+adventurerEffect = undefined 
+
 baseCardEffects :: forall (m :: * -> *). (MonadIO m, MonadState Game m) => Card -> m ()
 baseCardEffects c = do
  case c of

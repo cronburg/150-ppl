@@ -127,7 +127,7 @@ instance Show Supply where
 type Heuristic a = Game -> IO a
 type PickHeuristic b a = Game -> b -> IO a
 
-data Player = Player 
+data Player = Player
   { name :: String, hand :: Pile, deck :: Pile, discardPile :: Pile
   , inPlay :: Pile, numBuys :: Int, numActions :: Int, amtMoney :: Int
   , actHeuristic   :: Heuristic (Maybe Card) -- Ask player what action to play

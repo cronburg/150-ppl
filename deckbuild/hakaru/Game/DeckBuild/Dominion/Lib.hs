@@ -172,6 +172,13 @@ endCndn 3 _  = True                        -- Three stacks empty - game over
 endCndn n ((c,0):cs) = endCndn (n + 1) cs -- First stack empty - recurse on (n+1)
 endCndn n ((c,_):cs) = endCndn n cs       -- First stack NOT empty - recurse on n
 
+countVictory :: [Card] -> Int
+countVictory [] = 0
+countVictory (ESTATE:xs)   = 1 + countVictory xs
+countVictory (DUCHY:xs)    = 3 + countVictory xs
+countVictory (PROVINCE:xs) = 6 + countVictory xs
+countVictory (x:xs)        = 0 + countVictory xs
+
 -- Game is over if ending condition is true, or turns ran out:
 gameOver :: forall (m :: * -> *). MonadState Game m => m Bool
 gameOver = do
