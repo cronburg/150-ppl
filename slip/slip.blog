@@ -1,0 +1,58 @@
+
+type Die;
+distinct Die D4, D6, D8, D10, D12, D20;
+
+type Roll;
+#Roll ~ UniformInt(1,5);
+
+random Die die_drawn (Roll r, Timestep t) ~ Categorical({
+  D4  -> 12,
+  D6  -> 12,
+  D8  -> 12,
+  D10 -> 16,
+  D12 -> 17,
+  D20 -> 17
+});
+
+random Integer roll (Roll r, Timestep t) ~ case die_drawn(r,t) in {
+  D4  -> UniformInt(1,4),
+  D6  -> UniformInt(1,6),
+  D8  -> UniformInt(1,8),
+  D10 -> UniformInt(0,9),
+  D12 -> UniformInt(1,12),
+  D20 -> UniformInt(1,20)
+};
+
+
+/*
+random Real dsum (Timestep t) ~ toInt(sum({roll(r,t) for Roll r}));
+
+obs dsum(@0) = 21;
+obs dsum(@1) = 15;
+obs dsum(@2) = 34;
+obs dsum(@3) = 12;
+obs dsum(@4) = 18;
+obs dsum(@5) = 38;
+obs dsum(@6) = 46;
+obs dsum(@7) = 13;
+obs dsum(@8) = 24;
+obs dsum(@9) = 27;
+query size({r for Roll r});
+
+//query size({roll(r,@0) for Roll r});
+//query size({r for Roll r});
+query dsum(@2);
+*/
+
+obs toInt(sum({roll(r,@0) for Roll r})) = 21;
+obs toInt(sum({roll(r,@1) for Roll r})) = 15;
+obs toInt(sum({roll(r,@2) for Roll r})) = 34;
+obs toInt(sum({roll(r,@3) for Roll r})) = 12;
+obs toInt(sum({roll(r,@4) for Roll r})) = 18;
+obs toInt(sum({roll(r,@5) for Roll r})) = 38;
+obs toInt(sum({roll(r,@6) for Roll r})) = 46;
+obs toInt(sum({roll(r,@7) for Roll r})) = 13;
+obs toInt(sum({roll(r,@8) for Roll r})) = 24;
+obs toInt(sum({roll(r,@9) for Roll r})) = 27;
+query size({r for Roll r});
+

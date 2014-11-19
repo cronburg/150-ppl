@@ -1,0 +1,44 @@
+
+type Die;
+distinct Die D4, D6, D8, D10, D12, D20;
+
+random Die die_drawn (Timestep trialNum, Timestep rollNum) ~ Categorical({
+  D4  -> 12,
+  D6  -> 12,
+  D8  -> 12,
+  D10 -> 16,
+  D12 -> 17,
+  D20 -> 17
+});
+
+random Integer roll (Timestep trialNum, Timestep rollNum) ~ case die_drawn(trialNum, rollNum) in {
+  D4  -> UniformInt(1,4),
+  D6  -> UniformInt(1,6),
+  D8  -> UniformInt(1,8),
+  D10 -> UniformInt(0,9),
+  D12 -> UniformInt(1,12),
+  D20 -> UniformInt(1,20)
+};
+
+random Integer num_rolls ~ UniformInt(1,5);
+
+random Integer dsum(Timestep t) ~ case num_rolls in {
+  1 -> roll(t,@0),
+  2 -> roll(t,@0) + roll(t,@1),
+  3 -> roll(t,@0) + roll(t,@1) + roll(t,@2),
+  4 -> roll(t,@0) + roll(t,@1) + roll(t,@2) + roll(t,@3),
+  5 -> roll(t,@0) + roll(t,@1) + roll(t,@2) + roll(t,@3) + roll(t,@4)
+};
+
+obs dsum(@0) = 21;
+obs dsum(@1) = 15;
+obs dsum(@2) = 34;
+obs dsum(@3) = 12;
+obs dsum(@4) = 18;
+obs dsum(@5) = 38;
+obs dsum(@6) = 46;
+obs dsum(@7) = 13;
+obs dsum(@8) = 24;
+obs dsum(@9) = 27;
+query num_rolls;
+
