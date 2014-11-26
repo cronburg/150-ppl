@@ -26,6 +26,8 @@ import System.IO.Unsafe (unsafePerformIO)
 import Data.Dynamic (toDyn)
 --import Data.Typeable
 
+import System.Environment -- cmd line
+
 -- Whether or not player #1 wants to buy a card during this buy phase:
 wantToBuy :: Game -> IS.Measure Bool
 wantToBuy g = return $ (amtMoney.p1) g > 2
@@ -111,16 +113,47 @@ logprob ps = do
 -------------------------------------------------------------------------------
 -- Top-level functions
 
-greedyModel :: Measure Double
+greedyModel :: Measure (Double,Int)
 greedyModel = do
   param0 <- unconditioned $ uniform 0 1 
   let param1 = 1 - param0
   let g = unsafePerformIO $ runGreedy (param0,param1)
-  turns <- conditioned $ categorical [(turn g, 1.0)]
-  return $ param0
+--  turns <- conditioned $ categorical [(turn g, 1.0)]
+  return $ (param0, turn g)
 
-runMe n = do
-  --samples <- IS.empiricalMeasure 10 greedyModel [
-  samples <- mcmc greedyModel $ [Just (toDyn (Discrete (36 :: Int)))]
-  return $ take n samples
+-- turns == e.g. 36
+-- nSample == # samples to take for this run
+runMe nSample = do
+--  samples <- IS.empiricalMeasure 10 greedyModel []
+--  return samples
+  samples <- mcmc greedyModel [] -- $ [Just (toDyn (Discrete (turns :: Int)))]
+  return $ take nSample samples
+
+logMe nSample filename = do
+  samples <- mcmc greedyModel []
+  writeFile filename (show $ take nSample samples)
+
+{-
+
+import Text.Printf (printf)
+
+--runSamples :: String -> String -> IO ()
+runSamples fn ns = do
+  case reads ns :: [(Int,String)] of
+    ns':[] -> 
+
+-- Print program usage pattern
+usage = do
+  exe <- getProgName
+  printf "Usage: %s [output_fn] [num_samples]" exe
+
+-- ENTRYPOINT
+main = do
+  args <- getArgs
+  exe <- getProgName
+  case args of
+    fn:ns:[] -> runSamples fn ns
+    _        -> usage
+
+-}
 
