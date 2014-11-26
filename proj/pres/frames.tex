@@ -1,0 +1,108 @@
+
+\begin{frame} \frametitle{Motivation}
+\begin{itemize}
+\item {\bf Primary Goal: } Want to judge the strength \& limitations of a heuristic
+\item Domain experts model `winning` strategies
+\item Want to then visualize the probabilistic effects of changing the
+      values of parameters in the state space
+\item A {\bf probabilistic map} of the state space where the domain expert
+      specifies interesting variables to plot distributions over
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Toy Problems}
+\begin{itemize}
+\item 
+\end{frame}
+
+\begin{frame} \frametitle{MCMC Sampling Methods}
+\begin{itemize}
+\item Rejection Sampling - known model for joint distribution
+\item Random Walk
+  \begin{itemize}
+  \item Metropolis-Hastings - known model for joint distribution
+  \item Gibbs Sampling - for hard-to-sample joint distribution
+\item 
+\end{frame}
+
+\begin{frame} \frametitle{Possible Probabilistic Languages}
+\begin{itemize}
+\item {\bf Hakaru:} an EDSL in Haskell
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item {\bf BLOG:} a Java-based DSL
+  \begin{itemize}
+  \end{itemize}
+\item Church, Figaro, Fun, others discussed in class...
+% Talk about why other languages were not chosen
+
+\begin{frame} \frametitle{Difficulties}
+\begin{itemize}
+\item Conditioning on recursive models in Hakaru
+\item Expressive power of BLOG
+\end{itemize}
+
+\begin{frame} \frametitle{Case Study: Deckbuilding Games}
+\begin{itemize}
+% TODO: reference to Vaccarino from here:
+\item We chose \emph{Dominion} - experience
+\item {\bf The Process:}
+  \begin{itemize}
+  % Actual game engine capable of playing a game - probabilities arise
+  % from the underlying mechanics of how and when decks are shuffled,
+  % and probabilities *can* arise from what cards a player decides to
+  % buy or play during their turn.
+  \item Write sampling model based on game mechanics \emph{Dominion}
+  \item Determine interesting state variables to condition on
+  \item Run Hakaru MCMC
+  \item Plot resulting joint distributions for domain expert to explore
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Case Study: Dominion Mechanics}
+\begin{verbatim}
+λ> runGreedy (0.5, 0.5)
+Player1:
+    name   = "Greedy1"
+    hand   = [ESTATE, GOLD, PROVINCE, PROVINCE, SILVER]
+    inPlay = []
+    deck   = [SILVER,   PROVINCE, COPPER, SILVER,  COPPER
+             ,ESTATE,   COPPER,   COPPER, VILLAGE, VILLAGE
+             ,PROVINCE, ESTATE,   SILVER, COPPER]
+    dscrd  = [SILVER, SILVER, SILVER, COPPER, COPPER, PROVINCE]
+    buys=1, actions=1, money=0
+
+Player2:
+    name   = "Greedy2"
+    hand   = [COPPER, COPPER, COPPER, COPPER, VILLAGE]
+    inPlay = []
+    deck   = [SILVER,   SILVER, GOLD, COPPER, COPPER,   ESTATE
+             ,GOLD,     ESTATE, GOLD, ESTATE, PROVINCE, VILLAGE
+             ,PROVINCE, GOLD]
+    dscrd  = [SILVER, COPPER, SILVER, SILVER, SILVER, PROVINCE]
+    buys=1, actions=1, money=0
+
+Trash: []
+Supply: [(COPPER,60),  (CELLAR,10),  (MOAT,10),       (ESTATE,8)
+        ,(SILVER,27),  (VILLAGE,6),  (WOODCUTTER,10), (WORKSHOP,10)
+        ,(MILITIA,10), (REMODEL,10), (SMITHY,10),     (MARKET,10)
+        ,(MINE,10),    (DUCHY,8),    (GOLD,25),       (PROVINCE,0)]
+Turn #: 30
+\end{verbatim}
+\end{frame}
+
+\begin{frame} \frametitle{Case Study: Choice of Parameters}
+\begin{itemize}
+\item Initially focus on binary choices in card-buying-heuristic
+  \begin{itemize}
+  \item Buy \verb{VILLAGE} with probability $p0$
+  \item Buy \verb{CHANCELLOR} with probability $p1 = 1 - p0$
+  \item Condition on number of turns in a game
+  \item What does the distribution $P(p0 | turns = t)$ for some $t$ look like?
+  \end{itemize}
+% TODO: put in FUTURE section - non-binary choices
+\end{itemize}
+\end{frame}
+
