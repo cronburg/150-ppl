@@ -1,0 +1,3 @@
+[submodule "proj/deckbuild"]
+	path = proj/deckbuild
+	url = https://github.com/cronburg/deckbuild.git
