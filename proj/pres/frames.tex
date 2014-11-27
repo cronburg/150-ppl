@@ -1,18 +1,14 @@
 
 \begin{frame} \frametitle{Motivation}
 \begin{itemize}
-\item {\bf Primary Goal: } Want to judge the strength \& limitations of a heuristic
+\item {\bf Primary Goal: } Want to judge the strength \& limitations of
+      a game-play heuristic
 \item Domain experts model `winning` strategies
 \item Want to then visualize the probabilistic effects of changing the
       values of parameters in the state space
 \item A {\bf probabilistic map} of the state space where the domain expert
       specifies interesting variables to plot distributions over
 \end{itemize}
-\end{frame}
-
-\begin{frame} \frametitle{Toy Problems}
-\begin{itemize}
-\item 
 \end{frame}
 
 \begin{frame} \frametitle{MCMC Sampling Methods}
@@ -22,26 +18,75 @@
   \begin{itemize}
   \item Metropolis-Hastings - known model for joint distribution
   \item Gibbs Sampling - for hard-to-sample joint distribution
-\item 
+  \end{itemize}
+\end{itemize}
+\begin{columns}
+  \column{.45\linewidth}\includegraphics[width=\columnwidth]{rejection_sampling.png}
+  \column{.45\linewidth}\includegraphics[width=\columnwidth]{metropolis_hastings.png}
+\end{columns}
 \end{frame}
 
-\begin{frame} \frametitle{Possible Probabilistic Languages}
+\begin{frame} \frametitle{Probabilistic Languages}
 \begin{itemize}
+\item We will discuss the use of:
 \item {\bf Hakaru:} an EDSL in Haskell
   \begin{itemize}
-  \item 
+  \item Powerful host language support (fully embedded)
+  \item Somewhat lacking in domain-specific features (limited API)
   \end{itemize}
 \item {\bf BLOG:} a Java-based DSL
   \begin{itemize}
+  \item Poweful model of computation (many-worlds modeling)
+  \item Lacking in domain-specific tool support and language features
   \end{itemize}
-\item Church, Figaro, Fun, others discussed in class...
+\item Our discussion could be extended to Church, Figaro,
+      Fun, others languages discussed in class...
 % Talk about why other languages were not chosen
+\end{itemize}
+\end{frame}
 
-\begin{frame} \frametitle{Difficulties}
+\begin{frame}[fragile=singleslide] \frametitle{Sampling - Hakaru}
+\begin{minted}
+[ frame=lines
+, framesep=2mm
+, fontsize=\tiny
+, linenos
+] {haskell}
+  test :: IS.Measure Double
+  test  = IS.unconditioned (normal (-3) 1)
+  test2 = IS.unconditioned (uniform 1 5)
+
+  do
+    t  <- IS.sample test []
+    let s  = take 1000 $ map fst t
+    t2 <- IS.sample test2 []
+    let s2 = take 1000 $ map fst t2
+    return (makeHistogram 30 (V.fromList (s ++ s2)) "Histogram")
+\end{minted}
+
+\begin{columns}
+  % FIRST COLUMN
+  \column{.6\linewidth} \includegraphics[width=\columnwidth]{hakaru_histogram.png}
+  % SECOND COLUMN
+  \column{.48\linewidth}
+    \begin{itemize}
+    \item Can arbitrarily compose Hakaru with Haskell code - single syntax
+    \item Conditioned sampling on recursive models?
+    \end{itemize}
+\end{columns}
+\footnotetext[1]{
+  {\tiny Example taken from
+   \href{http://indiana.edu/~ppaml/HakaruTutorial.html}
+        {http://indiana.edu/~ppaml/HakaruTutorial.html}
+  }
+}
+\end{frame}
+
+\begin{frame} \frametitle{Sampling - BLOG}
 \begin{itemize}
-\item Conditioning on recursive models in Hakaru
 \item Expressive power of BLOG
 \end{itemize}
+\end{frame}
 
 \begin{frame} \frametitle{Case Study: Deckbuilding Games}
 \begin{itemize}
@@ -61,8 +106,9 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Case Study: Dominion Mechanics}
-\begin{verbatim}
+\begin{frame}[fragile=singleslide] \frametitle{Case Study: Dominion Mechanics}
+
+\begin{Verbatim}[fontsize=\tiny]
 λ> runGreedy (0.5, 0.5)
 Player1:
     name   = "Greedy1"
@@ -90,15 +136,16 @@ Supply: [(COPPER,60),  (CELLAR,10),  (MOAT,10),       (ESTATE,8)
         ,(MILITIA,10), (REMODEL,10), (SMITHY,10),     (MARKET,10)
         ,(MINE,10),    (DUCHY,8),    (GOLD,25),       (PROVINCE,0)]
 Turn #: 30
-\end{verbatim}
+\end{Verbatim}
+
 \end{frame}
 
-\begin{frame} \frametitle{Case Study: Choice of Parameters}
+\begin{frame}[fragile=singleslide] \frametitle{Case Study: Choice of Parameters}
 \begin{itemize}
 \item Initially focus on binary choices in card-buying-heuristic
   \begin{itemize}
-  \item Buy \verb{VILLAGE} with probability $p0$
-  \item Buy \verb{CHANCELLOR} with probability $p1 = 1 - p0$
+  \item Buy \verb|VILLAGE| with probability $p0$
+  \item Buy \verb|CHANCELLOR| with probability $p1 = 1 - p0$
   \item Condition on number of turns in a game
   \item What does the distribution $P(p0 | turns = t)$ for some $t$ look like?
   \end{itemize}
