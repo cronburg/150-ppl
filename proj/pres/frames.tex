@@ -83,6 +83,7 @@
 \end{frame}
 
 \begin{frame} \frametitle{Sampling - BLOG}
+% TODO: BLOG code example
 \begin{itemize}
 \item Expressive power of BLOG
 \end{itemize}
@@ -91,7 +92,7 @@
 \begin{frame} \frametitle{Case Study: Deckbuilding Games}
 \begin{itemize}
 % TODO: reference to Vaccarino from here:
-\item We chose \emph{Dominion} - experience
+\item We chose \emph{Dominion}\footnotemark to model in a probabilistic language
 \item {\bf The Process:}
   \begin{itemize}
   % Actual game engine capable of playing a game - probabilities arise
@@ -104,10 +105,11 @@
   \item Plot resulting joint distributions for domain expert to explore
   \end{itemize}
 \end{itemize}
+\footnotetext[1]{{\tiny by \emph{D. X. Vaccarino}}}
 \end{frame}
 
 \begin{frame}[fragile=singleslide] \frametitle{Case Study: Dominion Mechanics}
-
+\begin{center}
 \begin{Verbatim}[fontsize=\tiny]
 λ> runGreedy (0.5, 0.5)
 Player1:
@@ -137,19 +139,27 @@ Supply: [(COPPER,60),  (CELLAR,10),  (MOAT,10),       (ESTATE,8)
         ,(MINE,10),    (DUCHY,8),    (GOLD,25),       (PROVINCE,0)]
 Turn #: 30
 \end{Verbatim}
-
+\end{center}
 \end{frame}
 
 \begin{frame}[fragile=singleslide] \frametitle{Case Study: Choice of Parameters}
 \begin{itemize}
 \item Initially focus on binary choices in card-buying-heuristic
   \begin{itemize}
-  \item Buy \verb|VILLAGE| with probability $p0$
-  \item Buy \verb|CHANCELLOR| with probability $p1 = 1 - p0$
+  \item If we have $3$ treasure on a turn...
+    \begin{itemize}
+    \item Buy \verb|VILLAGE| with probability $p0$
+    \item Buy \verb|CHANCELLOR| with probability $p1 = 1 - p0$
+    \end{itemize}
   \item Condition on number of turns in a game
   \item What does the distribution $P(p0 | turns = t)$ for some $t$ look like?
   \end{itemize}
 % TODO: put in FUTURE section - non-binary choices
 \end{itemize}
+\begin{columns}
+  \column{.48\linewidth} \begin{flushright} \includegraphics[width=.45\columnwidth]{village.jpg}    \end{flushright}
+  \column{.48\linewidth} \begin{flushleft}  \includegraphics[width=.45\columnwidth]{chancellor.jpg} \end{flushleft}
+\end{columns}
+\footnotetext[1]{\tiny card content by D. X. Vaccarino}
 \end{frame}
 
