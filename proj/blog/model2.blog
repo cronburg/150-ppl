@@ -84,4 +84,3 @@ obs money(@2)        = 4;
 //obs game_length      = @20;
 obs wins             = true;
 query cardBought(@2);
-
