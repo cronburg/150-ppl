@@ -101,9 +101,10 @@
 \end{frame}
 
 \begin{frame}[fragile=singleslide] \frametitle{Case Study: Dominion Mechanics}
+{\tiny $\lambda$\verb|> runGreedy (0.5, 0.5)|}
 \begin{center}
+%λ> runGreedy (0.5, 0.5)
 \begin{Verbatim}[fontsize=\tiny]
-λ> runGreedy (0.5, 0.5)
 Player1:
     name   = "Greedy1"
     hand   = [ESTATE, GOLD, PROVINCE, PROVINCE, SILVER]
@@ -170,10 +171,9 @@ Turn #: 30
 \begin{itemize}
 \item For paper:
   \begin{itemize}
-  \item Condition using Metropolis Hastings
   \item New game heuristic model(s)
   \end{itemize}
-\item Condition on other heuristics
+\item Metropolis Hastings with conditioning on other heuristics
   \begin{itemize}
   \item \# Points
   \item Average hand value on a given turn
@@ -182,13 +182,52 @@ Turn #: 30
 \end{itemize}
 \end{frame}
 
-\begin{frame} \frametitle{Future}
+\begin{frame}[fragile=singleslide] \frametitle{Technical Difficulties \& Future}
 \begin{itemize}
-\item ...
+\item Haskell monad transformers - Hakaru needs more monadic support
+\item Random numbers - Hakaru needs cleaner randomness support
+\item Need graceful handling of runtime errors - preferably none
+\item Difficult to distinguish Hakaru bugs from model bugs
+\item Card shuffling bug: *** Exception: {[}extractTree{]} impossible
 \end{itemize}
+{\tiny $\lambda$\verb|> runMetrop 25 100|}
+\begin{Verbatim}[fontsize=\tiny]
+[(0.9799143491179355,1.0),(0.9799143491179355,1.0),(0.9799143491179355,1.0),...
+\end{Verbatim}
 \end{frame}
 
-\begin{frame} \frametitle{Acknowledgements}
+%\begin{frame} \frametitle{Conclusions}
+%\end{frame}
+
+\begin{frame}[fragile=singleslide] \frametitle{Acknowledgements}
+\begin{columns}
+\column{.48\linewidth}
+  \begin{itemize}
+  \item Norman
+  \item stackoverflow
+  \item learnyouahaskell.com
+\vspace{5mm}
+\end{itemize}
+{\tiny
+$$
+P\left(\frac{\textrm{Hakaru Code}}{\textrm{Runs Correctly}} \mid
+\textrm{Type Checks}\right)
+$$
+}
+
+\column{.52\linewidth}
+  \includegraphics[width=.7\columnwidth]{seashell.png}
+  \begin{Verbatim}[fontsize=\tiny]
+Title text: This is roughly equivalent to 'number of
+times I've picked up a seashell at the ocean' / 'number
+of times I've picked up a seashell', which in my case
+is pretty close to 1, and gets much closer if we're
+considering only times I didn't put it to my ear.
+  \end{Verbatim}
+%  \end{flushleft}
+\end{columns} 
+%  \end{flushleft}
+%\end{columns}
 \end{frame}
 
 
