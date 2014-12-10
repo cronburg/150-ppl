@@ -1,0 +1,33 @@
+Straight forward chaining / inferfence to get out a distribution
+over turns in a game given a specific parameter
+
+rejection sampling might be sufficient
+
+try not to ask questions about the tails of gaussian distributions - get the
+output to be interesting by asking what is the characteristic (mean value +- std_dev)
+values of a particular gaussian.
+
+Condition on the value of p0 for a particular turn number in the game, e.g.:
+  P(#_turns_in_game | what card I buy on turn # X for each possible amount of money in my hand), e.g.:
+
+  P(# turns in game |
+      buy_heuristic(t :: Turn# (Int)) = case t of
+        0 -> case money_in_play of
+                1 -> Nothing
+                2 -> Chapel
+                3 -> Village
+                4 -> Remodel
+                5 -> Market
+        1 -> case money_in_play of
+                ...
+        ...
+        max_turns -> ...
+  )
+
+-- uncnd and cnd distributions need to be parameters to the model when using Hakaru
+-- -- condition on conditional distributions
+
+Lazy & Eager evaluation form a monad - combinator for swapping back and forth between
+the two when the user specifies a particular compiler / language optimization will be
+applicable (result in a program-speedup or use of less memory.
+
