@@ -1,0 +1,31 @@
+\ProvidesPackage{draftstamp}
+\usepackage{color}
+\usepackage{fancyhdr}
+
+\newcommand{\setdraftno}[1]{
+
+	% set the header an footer on the pages to print the draft number
+	\newcommand{\draft}{\textcolor{red}{--- DRAFT v#1 ---}}
+
+	\fancypagestyle{draft} {
+		\renewcommand\headrulewidth{0pt}
+		\renewcommand\footrulewidth{0pt}
+		\lhead{\draft}
+		\chead{}
+		\rhead{}
+		\lfoot{\draft \\ \textcolor{red}{Printed on \today}}
+	}
+	\pagestyle{draft}
+
+	% Append draft statement to the title
+	% I'm commending this out because the extra line changes the page
+	% layout.
+
+	%\let\latextitle\title
+	%\renewcommand{\title}[1]{\latextitle{##1 \\ \draft}}
+	%\renewcommand{\title}[1]{\latextitle{##1 \\ \draft}}
+
+	% Put the draft markings on the title page too.
+	\let\latexmaketitle\maketitle
+	\renewcommand{\maketitle}{\latexmaketitle \thispagestyle{draft}}
+}

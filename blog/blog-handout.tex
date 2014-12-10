@@ -1,0 +1,123 @@
+\documentclass{handout}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wrapfig}
+\usepackage{url}
+\usepackage{fancyvrb}
+\usepackage{pgffor}
+\usepackage{minted}
+\usepackage{pdfpages}
+
+\SetInstructor{\href{mailto:karl@cs.tufts.edu}{karl@cs.tufts.edu}}
+\SetCourseTitle{150-PP}
+\SetSemester{Fall 2014}
+\SetHandoutTitle{Bayesian Logic (BLOG) Probabilistic Modeling Language}
+
+\begin{document}
+\maketitleinst
+
+\section{Modeling}
+\begin{itemize}
+\item BLOG models specify the structure and contents of \emph{possible worlds}.
+\item Define mutually recursive \verb|random| and \verb|fixed| functions.
+\end{itemize}
+
+\section{Evidence}
+\begin{itemize}
+\item Can make arbitrary propositions about the model - propositional conditioning:
+\end{itemize}
+\begin{minted}{haskell}
+obs (x :: Proposition)
+\end{minted}
+
+\section{Query}
+\begin{itemize}
+\item Given any number of observations, can subsequently query the distribution of
+      values for a particular function or expression in the model:
+\end{itemize}
+\begin{minted}{haskell}
+query (A (a1, ..., a_n))
+\end{minted}
+
+\section{Distribution Representation}
+\begin{itemize}
+\item Java classes corresponding to specific kinds of distributions
+\item Logarithmic probabilities stored in real-valued data type / Java objects
+\item Users can `\emph{easily}' add new Java distribution classes
+\item Output representation is distribution over arbitrary type, e.g.:
+\end{itemize}
+\begin{verbatim}
+========  LW Trial Stats =========
+Log of average likelihood weight (this trial): -3.4266215829983153
+Average likelihood weight (this trial): 0.032496542400000314
+Fraction of consistent worlds (this trial): 1.0
+Fraction of consistent worlds (running avg, all trials): 1.0
+======== Query Results =========
+Number of samples: 10000
+Distribution of values for Weather(@6)
+  Dry 0.7168517226620216
+  Rainy 0.2831482773379617
+Distribution of values for RainyRegion
+  true  0.7680060879338363
+  false 0.23199391206616182
+======== Done ========
+\end{verbatim}
+
+\section{Language Strengths}
+\begin{itemize}
+\item Java EDSL means Java developers can easily interface arbitrary code into the engine
+\item Familiar object-oriented style (because of possible worlds), but with necessary functional
+      aspects to make models more readable and concise.
+\end{itemize}
+
+\section{Language Weaknesses}
+\begin{itemize}
+\item Modularity
+\item Poorly documented \& designed grammar - could have abstracted away a core set of
+      probabilistic features and then called out to e.g. a Java grammar specification
+      for the general-purpose language constructs
+\end{itemize}
+\begin{minted}{java}
+random Boolean Burglary ~ BooleanDistrib(0.001);
+
+random Boolean Earthquake ~ BooleanDistrib(0.002);
+
+random Boolean Alarm ~
+  if Burglary then
+    if Earthquake then BooleanDistrib(0.95)
+    else  BooleanDistrib(0.94)
+  else
+    if Earthquake then BooleanDistrib(0.29)
+    else BooleanDistrib(0.001);
+
+random Boolean JohnCalls ~
+  if Alarm then BooleanDistrib(0.9)
+  else BooleanDistrib(0.05);
+
+random Boolean MaryCalls ~
+  if Alarm then BooleanDistrib(0.7)
+  else BooleanDistrib(0.01);
+
+obs JohnCalls = true;
+obs MaryCalls = true;
+
+query Burglary;
+\end{minted}
+
+\section{Memorable}
+\begin{itemize}
+\item Metropolis-Hastings sampling
+\item Intuitive runtime system front-end
+\end{itemize}
+
+\section{References}
+\begin{itemize}
+\item BLOG syntax \& semantics - https://bayesianlogic.github.io/download/blog-langref.pdf
+\end{itemize}
+
+\end{document}
