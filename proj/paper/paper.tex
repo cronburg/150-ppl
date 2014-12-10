@@ -1,0 +1,53 @@
+\documentclass[pldi]{sigplanconf-pldi15}
+
+\usepackage{graphics}
+\usepackage[pdftex]{graphicx}% Include figure files
+\usepackage{bm}
+\usepackage{natbib} % necessary for bibtex
+\usepackage[toc,page]{appendix}
+\usepackage{pgffor}
+\usepackage{minted}
+\usepackage{syntax}
+
+% Suggested PLDI packages
+\usepackage{SIunits}            % typset units correctly
+\usepackage{courier}            % standard fixed width font
+\usepackage[scaled]{helvet} % see www.ctan.org/get/macros/latex/required/psnfss/psnfss2e.pdf
+\usepackage{url}                  % format URLs
+\usepackage{listings}          % format code
+\usepackage{enumitem}      % adjust spacing in enums
+\usepackage[colorlinks=true,allcolors=blue,breaklinks,draft=false]{hyperref}   % hyperlinks, including DOIs and URLs in bibliography
+\newcommand{\doi}[1]{doi:~\href{http://dx.doi.org/#1}{\Hurl{#1}}}   % print a hyperlinked DOI
+
+% Grammar formatting
+\setlength{\grammarparsep}{4pt plus 1pt minus 1pt}
+\setlength{\grammarindent}{30em}
+
+% minted haskell
+\newmintinline{haskell}
+
+\begin{document}
+
+\title{Probabilistic Inference Applied to Game Heuristics\\
+  \null
+  {\small \textnormal{
+    Karl Cronburg\\
+    \texttt{karl@cs.tufts.edu}\\
+    \emph{Dept. of Computer Science, Tufts University, Medford MA 02155}\\
+  }}
+}
+
+\maketitle
+\begin{abstract}
+\end{abstract}
+
+
+
+%{\softraggedright
+%\bibliographystyle{abbrvnat}
+%\bibliography{deckbuild}
+%}
+
+%\input{appendix.tex}
+
+\end{document}
