@@ -114,10 +114,12 @@ In this equation we now have a name for the observed random variable
 `game length' ($t_e$). We also have $t_e'$ a specific value for $t_e$.
 Finally the latent random variables $m$ and $b$ together comprise a
 characteristic description of the conditional distribution. The
-key to this equation is that $m$ and $b$ are .
+key to this equation is that $m$ and $b$ are variables which cannot
+be directly sampled / observed and have a probabilistic causal affect
+on the observed variable $p_0$.
 Since we have no feasible means for determining the closed analytical
-forms of $m$ and $b$ we rely on the Markov Chain Monte-Carlo (MCMC)
-methods 
+forms of $m$ and $b$ we have relied on the Markov Chain Monte-Carlo (MCMC)
+methods as described earlier in Section \ref{sec:mcmc}.
 
 % - the slope $m$ is a relative measure of the balance between cards
 %   $X$ and $Y$, namely balance can be interpreted as proportional

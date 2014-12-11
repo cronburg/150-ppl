@@ -1,8 +1,37 @@
 
 % Probabilistics models, observations, and queries
-\section{Model-Observe-Query} \label{sec:MOQ}
+\section{Model-Observe-Query} \label{sec:moq}
 % Talk about how, in general, game heuristics can be expressively
 % described using probablistic models
 
 \subsection{Example Game}
+
+\subsection{Markov Chain Monte-Carlo} \label{sec:mcmc}
+% talk about how we use rejection sampling when performing inference
+% on probabilistic distributions, and why this is sufficient for
+% our purposes >>>>v
+
+% (it's because the points in the state-space which
+% evaluate to true in the condition are diffuse and high overall density in the state-space.
+% this will generally be true for standard deckbuilding games because
+% the uniform-card-shuffling does a robust job of diffusing points which
+% evaluate to true across the state space. the uniform shuffling is an inherently
+% smooth transformation on the state space. similarly the conditionally true
+% points in the state-space are dense because the conditional distributions
+% we look at in this paper are not very restrictive - i.e. the percentage of
+% conditionally false points in the state-space is very low, making rejection
+% sampling successful because it's generally easy to find a conditionally true
+% point in the state space regardless of the prior you sample from.
+
+In the future we would like to further study instances in which rejection
+sampling is insufficient due to high rejection rates. High rejection rates
+in the case of deck building games like Dominion will most likely be the
+result of inference questions involving very restrictive conditioning.
+While it is possible that a high rejection rate can be the result of
+a non-diffuse true distribution, this is not indicative of an interesting
+deck of cards. For example you could design a card which essentially turns
+of shuffling in the game resulting in a pathological 
+
+%conditional distributions we are
+% currently trying to sample from 
 
