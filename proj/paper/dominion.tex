@@ -3,8 +3,9 @@
 % to ask the model
 \section{Dominion} \label{sec:dom}
 
-Dominion is a game we are familiar with. This game is known as a turn-based
-deckbuilding game, where a player \emph{builds} a good deck by choosing what
+Dominion is a game we are familiar with. This game falls into the category of
+{\bf turn-based
+deckbuildings game}, where a player \emph{builds} a good deck by choosing what
 cards to buy on their turn. The probabilistic component of deckbuilding games
 arises from shuffling decks of cards at certain points in the game. In particular
 in Dominion the cards a player plays can affect both when cards get shuffled
@@ -49,7 +50,7 @@ implementation):
 One observe-query inference question to ask the model then is:
 
 \begin{equation} \label{q:inference}
-
+...
 \end{equation}
 
 % -----------------------------------------------------------------------------
@@ -83,7 +84,7 @@ also in line with the personal belief of the author that a
 However, what the gaussian form of Figure \ref{fig:turn-dist}
 does not tell us is the characteristic distribution of values of
 $p_0$ for a given game length. This is what the inference Question
-#\ref{q:inference} is trying to give us insight into.
+\#\ref{q:inference} is trying to give us insight into.
 
 %While this is
 %interesting and is in line with the personal belief of the author
@@ -104,42 +105,75 @@ In Figure \ref{fig:rejection-sampling} we see the characteristic
 form of the turn-conditioned distribution over the
 \hsk{VILLAGE} - \hsk{CHANCELLOR} buy ratio ($p_0$). At first glance
 these distributions appear to be linear in $p_0$. In terms of our
-parameters we have the equation:
+parameters we can therefore write the equation:
 
 \begin{equation} \label{eqn:linear-distribution}
 P(p_0 | t_e = t_e') = m(p_0, X, Y) * p_0 + b(p_0, X, Y)
 \end{equation}
 
 In this equation we now have a name for the observed random variable
-`game length' ($t_e$). We also have $t_e'$ a specific value for $t_e$.
+`game length' ($t_e$, the end turn number).
+We also have $t_e'$ a specific (conditional) value for $t_e$.
 Finally the latent random variables $m$ and $b$ together comprise a
 characteristic description of the conditional distribution. The
 key to this equation is that $m$ and $b$ are variables which cannot
 be directly sampled / observed and have a probabilistic causal affect
-on the observed variable $p_0$.
+on the observed variable $t_e$.
 Since we have no feasible means for determining the closed analytical
 forms of $m$ and $b$ we have relied on the Markov Chain Monte-Carlo (MCMC)
 methods as described earlier in Section \ref{sec:mcmc}.
 
-% - the slope $m$ is a relative measure of the balance between cards
-%   $X$ and $Y$, namely balance can be interpreted as proportional
-%   to $1 / abs(m). A slope of exactly $m = 0$ means the cards $X$
-%   and $Y$ are perfectly balanced
-% - the intercept $b$ is an absolute measure of how
-%   dominant $X$ is compared to $Y$.
+For the specific case of $X =$ \hsk{VILLAGE} and $Y =$ \hsk{CHANCELLOR},
+we see (Figure \ref{fig:rejection-sampling}) a relationship where as the
+number of turns $t_e'$ we condition on goes down...
 
-% Future work: come up with a formula for the balance of a game in terms
-%              of $m$ and $b$
+\begin{itemize}
+\item the slope $m$ of the conditional distribution increases from negative to positive
+\item the intercept $b$ decreases
+\item the area under the distribution gradually shifts from low values of $p_0$ to
+      high values of $p_0$.
+\end{itemize}
 
+These trends are unsurprisingly in accordance with the trend of $\mu_{t_e}$,
+the mean of the gaussian distribution of Figure \ref{fig:turn-dist}. Namely
+that the \hsk{VILLAGE} to \hsk{CHANCELLOR} ratio increases as the number of
+turns in the game decreases. The new insight we have gained from our MCMC
+methods is the form of Equation \ref{eqn:linear-distribution} as well as values
+for the latent variables $m$ and $b$ at various conditioned points. The form
+of the conditional distribution is in fact itself a latent variable which
+can be dependent on both the hyper-parameters to the game engine and parameters
+to the probabilistic model. Presently it is a latent variable which can only be
+computed by a human, but given a good fitting algorithm could be automated.
+See Section \ref{sec:future} for further discussion of analysis automation.
+
+% TODO: this paragraph...
 variables of $t_e$ the observed game
 length random variable, $t_e'$ a specific value for $t_e$, and
 $m$ and $b$ the latent random variables which together comprise
 a characteristic description of the conditional distribution
 as described on the right-hand side of the equation.
 
+% -----------------------------------------------------------------------------
+% Results figures:
+
+\begin{figure}
+\includegraphics[width=.95\columnwidth]{../pres/village-chancellor-turn-dist.png}
+\caption{\label{fig:turn-dist} Probability distribution over number of turns
+in a 2-player game of Dominion.
+Both players play a greedy strategy with model
+parameters of $X = \textrm{Village}$, $Y = \textrm{Chancellor}$, and
+$p_0 = 0.5$. See Appendix \ref{app:dominion-card} for a complete description
+of the semantics behind these cards and why this pair of cards is interesting
+for the game Dominion.
+This distributions is unconditioned, therefore only requiring sampling directly
+from the model (no inference).
+}\end{figure}
+
 
 % future work: less noisy / more samples / error bars on the bar charts
 %               -- validate the form of the distribution statistically
+
+\section{Probabilistic Language Analysis} \label{sec:meta-analysis}
 
 % Need some sort of combinator library / monadic abstraction which
 % keeps track of the level of abstraction you want to describe your
@@ -172,22 +206,4 @@ process. In many situations declaratively
 describing a probabilistic model of the possible worlds is more natural.
 In the domain of games, one can envision a declarative enumeration
 of the rules in a game and how they affect the game state.
-
-% -----------------------------------------------------------------------------
-% Results figures:
-
-\begin{figure}
-\includegraphics[width=.95\columnwidth]{../pres/village-chancellor-turn-dist.png}
-\caption{\label{fig:turn-dist} Probability distribution over number of turns
-in a 2-player game of Dominion.
-Both players play a greedy strategy with model
-parameters of $X = \textrm{Village}$, $Y = \textrm{Chancellor}$, and
-$p_0 = 0.5$. See Appendix \ref{app:dominion-card} for a complete description
-of the semantics behind these cards and why this pair of cards is interesting
-for the game Dominion.
-This distributions is unconditioned, therefore only requiring sampling directly
-from the model (no inference).
-}\end{figure}
-
-
 

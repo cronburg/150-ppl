@@ -3,8 +3,60 @@
 
 This work touches on the language design aspects of PPLs
 in general. We also discussed the applicability of such PPLs
-to a specific game (Dominion). On the latter, future work
-will involve:
+to a specific game (Dominion).
+
+\subsection{Dominion} \label{sec:future:dominion}
+%On the latter, future work
+%will involve:
+
+This work has demonstrated that modeling Dominion is, by itself,
+a difficult task. The modeler must have both an intimate knowledge
+of Dominion's mechanics and some level of experience using PPLs.
+This is further complicated by the fact that games like Dominion
+are described most naturally in a recursive form. Future work should
+therefore include a guarantee of correctness of the models presented
+in this paper. We are confident in the MCMC techniques used in this
+paper. We are however less confident in the exact numeric results
+shown in the distributions in the results section. The results
+presented do cross-validate with existing beliefs, we should however
+perform a more statistically rigorous analysis of these
+results.
+
+This future analysis could involve computing values for the
+intercepts and slopes of the three distributions in Figure
+\ref{fig:rejection-sampling}. We believe this slope $m$ can be used
+as a relative measure of the balance between the cards $X$ and $Y$
+in our model.
+
+% TODO: future work discuss automation of analysis
+
+% TODO: discuss fitting algorithms in future work section
+
+% TODO / future work: compare a linear fit of the distribution with
+% an exponential one. discuss / think about how we might discuss why
+% the underlying game mechanics and our choices for $X$ and $Y$ might
+% make either a linear or exponential fit inherently more meaningful
+% (e.g. what would the parameters to the exponential model of the
+% probability distribution correspond to in terms of balance / interaction
+% of the two cards - how can we quantify specific interactions between
+% cards. an interaction between two cards on a player's turn in Dominion
+% is probabilistically linked to both the total number of turns in the
+% game and any latent variables we are interested in
+
+% TODO or future work: compute or approximate values for the intercept
+% and slope of the three distributions in the \ref{fig:rejection-sampling}
+% figure.
+
+% - the slope $m$ is a relative measure of the balance between cards
+%   $X$ and $Y$, namely balance can be interpreted as proportional
+%   to $1 / abs(m). A slope of exactly $m = 0$ means the cards $X$
+%   and $Y$ are perfectly balanced
+% - the intercept $b$ is an absolute measure of how
+%   dominant $X$ is compared to $Y$.
+
+% Future work: come up with a formula for the balance of a game in terms
+%              of $m$ and $b$
+
 
 \begin{itemize}
 \item Implementation of more Dominion-specific heuristics.
@@ -19,7 +71,8 @@ will involve:
       {\bf balanced} sets of cards to play with.
 \end{itemize}
 
-On the PPL design side, we would like to further explore:
+\subsection{PPL Design} \label{sec:future:PPL}
+%On the PPL design side, we would like to further explore:
 
 \begin{itemize}
 \item Useability of Church, Figaro, probability monad, and other
@@ -29,7 +82,7 @@ On the PPL design side, we would like to further explore:
       abstractions?
 \end{itemize}
 
-\section{Conclusions} \label{sec:conc}
+%\section{Conclusions} \label{sec:conc}
 
 \section{Acknowledgements} \label{sec:ack}
 

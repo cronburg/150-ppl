@@ -5,13 +5,28 @@ utility in a game. Due to the probabilistic nature of many games, this descripti
 can be formulated as a {\bf probabilistic model}. Repeated sampling from this model
 gives the modeler a top-down view of what the heuristic does.
 The modeler can then, given an inference engine, query the state of the game given
-some observations about earlier states of the game.
+some observations about a state of the game at a different point in time.
 
 It is apparent from this description that game-play heuristics fit
 into the model-observe-query pattern used by existing Probabilistic Programming
 Languages (PPLs).
 In this work we present an argument favouring the use of PPLs
-for describing and reasoning about game heuristics.
+for describing game heuristics and reasoning about their performance.
+
+We now continue in Section \ref{sec:goals} with an overview of the goals of this
+work as they relate to PPL design. This is followed in Section \ref{sec:moq}
+with a discussion of how the probabilistic observe-query model of computation
+is applicable to certain questions game designers and players might ask of a
+game heuristic. This work then looks at a particular game with sufficiently
+complicated probabilistic game mechanics, Dominion, discussed in Section
+\ref{sec:dom}.
+The complexity of Dominion and our attempts to model and make queries gives
+us insight into the desired features of a PPL, and advantages and disadvantages
+of existing PPLs. We discuss these insights in Section \ref{sec:meta-analysis}.
+This is followed in Section \ref{sec:future:dominion} with a discussion of
+Dominion-specific future work. We also touch on in Section \ref{sec:future:PPL}
+the future of PPLs in relation to their applicability to the domain of
+game heuristics.
 
 %Our goal is to show that probabilistic inference is directly applicable to game
 %heuristics. We argue that the questions a heuristic designer is interested in can be
@@ -19,7 +34,8 @@ for describing and reasoning about game heuristics.
 %PPLs.
 
 \section{Goals} \label{sec:goals}
-  
+% goals of this work in relation to PPL design
+
 %Existing probabilistic
 %The goals of the work presented in the
 
