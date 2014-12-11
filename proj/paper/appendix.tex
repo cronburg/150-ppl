@@ -3,7 +3,7 @@
 \onecolumn
 \appendix
 
-\section{Dominion Runtime System Cards}
+\section{Dominion Runtime System Cards} \label{appendix:runtime-cards}
 \inputminted
 [ frame=lines
 , fontsize=\small %\fontsize{1mm}{1mm} %\tiny
@@ -15,9 +15,13 @@ The code above is indicative of what the runtime system is given as
 hyper-parameters to the model. The function \hsk{kingdomCards}
 specifies which cards are to be used during a single game. The
 \hsk{turnRules} function further specifies parameters
-to the underlying mechanics of Dominion. For an in-depth analysis of the
-abstractions used to define these hyper-parameters see the
-DeckBuild \ref{DeckBuild} paper.
+to the underlying mechanics of Dominion. For instance in the code above
+the \verb|Dominion_Standard| game parameters specify that a player draws
+$5$ cards during her draw phase, starts with $1$ action during her action
+phase, starts with $1$ buy during her buy phase, and discards \verb|All|
+of her cards during her discard phase.
+For an in-depth analysis of the abstractions used to define these
+hyper-parameters see the DeckBuild \ref{DeckBuild} paper.
 In short, the above code is the quasiquoted \ref{haskell-quasiquoting}
 output of the embedded DSL DeckBuild.
 
@@ -32,7 +36,7 @@ output of the embedded DSL DeckBuild.
 ] {haskell}{ComplexEffects.hs}
 
 The code above defines the state transformation to be performed on the game when
-a \hsk{CELLAR} is played. When played, a \mintinline{haskell}{CELLAR}
+a \hsk{CELLAR} is played. When played, a \hsk{CELLAR}
 requires the player to pick any number of cards from her hand and discard them.
 For each card she discards, she draws one card from her deck and places it into her hand.
 
@@ -59,7 +63,6 @@ player decides to discard will indirectly determine how many more turns until
 she needs to reshuffle her deck. Since shuffling is a probabilistic action, this
 implication creates a probabilistic causal link from actions made by the player
 to the observable states of the game.
-
 The same probabilistic causal link exists for \hsk/VILLAGE/ and \hsk/CHANCELLOR/,
 the two cards discussed in detail in this paper.
 
@@ -97,22 +100,21 @@ Turn #: 30
 \end{Verbatim}
 
 Above is a snapshot of the state of the runtime system after two
-probabilistic computer-player models played a game against each other.
-The player models are given direct access to this game-state information
+greedy models played a game against each other.
+The models are given direct access to this game-state information
 on each turn of the game. In future iterations of the runtime system
-their will likely be a feature whereby the players can `remember' what
+their will be a feature whereby the players can remember what
 they did on previous turns.
 
-In the snapshot, the \hsk{Supply :: [(CardName,Int)]} where
+In the snapshot, we have a \hsk{Supply :: [(CardName,Int)]} where
 the \hsk{Int} corresponds to the number of copies of
 that particular card in the supply. The runtime system is implemented in
-this manner so as to reduce the space-complexity constant. In a future
-iteration of the runtime system, game designers will be
-able to turn on and off these kinds of optimizations on a
-per-\hsk{Pile} basis.
+this manner so as to reduce the space-complexity constant.
 
-Similarly, a game designer may wish to specify the order in which cards
-appear in a \hsk{Pile}. In the current implementation
-of the runtime system, ordering of most piles defaults to LIFO queue
-order (except a player's hand which is shown alphabetically).
+The immutable nature of data is an advantage of using Haskell as the
+host language for probabilistic modeling. In particular, the probabilistic
+heuristic models used in this work were designed in a manner which expects
+immutable data. This is true of probabilistic state models in general - many
+of the transformations done to the state are purely functional, making
+immutable semantics in the language useful.
 

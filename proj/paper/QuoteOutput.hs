@@ -29,7 +29,7 @@ kingdomCards = [ RuntimeCard
                    , cCost = 8 }
                 ]
 
-turnRules = [ Turn
+turnRules = [ GameParameters
               { turnID     = "Dominion_Standard"
               , turnPhases =   
                 [ Phase {phaseName = ActionP,  phaseInt = PhaseInt 1 }
