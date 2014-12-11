@@ -28,22 +28,48 @@ intercepts and slopes of the three distributions in Figure
 to compute the relative balance between the cards $X$ and $Y$ in
 our greedy model. Namely that balance is proportional to
 $1 / abs(m)$. A slope of exactly $m = 0$ would mean the cards
-$X$ and $Y$ are perfectly balance (infinite balance). In contrast
+$X$ and $Y$ are perfectly balanced (infinite balance). In
+this case we have a uniform conditional probability distribution
+over $p_0$.
+
+In contrast
 a slope approaching $m = \pm \infty$ indicates either $X$ or $Y$
 completely dominates the other (perfectly imbalanced). The
-conditional distribution we infer would in this case approach
-the form of a dirac-delta function:
+conditional distribution we infer should, for perfect imbalance,
+approach the form of a dirac-delta function:
 
-$$\[P(p_0 | t_e = t_e') \rightarrow \left\{
+$$P(p_0 | t_e = t_e') \rightarrow \left\{
   \begin{array}{lr}
-  \delta(0.0) & : \textrm{ as } m \rightarrow +\infty
-  \delta(1.0) & : \textrm{ as } m \rightarrow -\infty
+    \delta(0.0) & : \textrm{ as } m \rightarrow -\infty \\
+    \delta(1.0) & : \textrm{ as } m \rightarrow +\infty
   \end{array}
 \right.
-\]$$
+$$
 
+In similar fashion to the slope $m$, we believe the intercept $b$ to be
+an absolute measure of the balance between cards $X$ and $Y$.
+Future work will involve both testing these hypotheses about
+the form of the distributions and quantifying the distributions
+for interesting conditions.
 
+We hope to make analyses like this one more friendly to `game design'
+domain experts who are not steeped in the statistical and
+linguistic aspects of the analysis. Such a goal is best suited to
+a domain-specific probabilistic programming language. This DSL
+would provide built-in functionality for computing metrics like
+\emph{balance} from the inferred conditional distributions.
+The output of programs in the DSL would be a set of statistics
+and visualizations of interest to a game designer. This output
+is in lieu of (or in addition to) the probability distribution(s)
+printed by existing general-purpose PPLs.
+% 3 levels of meta (Language    -> Probabilistic -> Game)
+%                  (Linguistics -> Statistics    -> Design)
 
+%To make these sorts of analyses more concrete we hope to describe our analyses
+%from Section \ref{sec:dom:greedy-results} in terms a `game design'
+%domain expert can understand.
+%and described in terms a
+%game design domain expert not steeped in the specifics
 
 % TODO: future work discuss automation of analysis
 
@@ -59,21 +85,6 @@ $$\[P(p_0 | t_e = t_e') \rightarrow \left\{
 % cards. an interaction between two cards on a player's turn in Dominion
 % is probabilistically linked to both the total number of turns in the
 % game and any latent variables we are interested in
-
-% TODO or future work: compute or approximate values for the intercept
-% and slope of the three distributions in the \ref{fig:rejection-sampling}
-% figure.
-
-% - the slope $m$ is a relative measure of the balance between cards
-%   $X$ and $Y$, namely balance can be interpreted as proportional
-%   to $1 / abs(m). A slope of exactly $m = 0$ means the cards $X$
-%   and $Y$ are perfectly balanced
-% - the intercept $b$ is an absolute measure of how
-%   dominant $X$ is compared to $Y$.
-
-% Future work: come up with a formula for the balance of a game in terms
-%              of $m$ and $b$
-
 
 \begin{itemize}
 \item Implementation of more Dominion-specific heuristics.
