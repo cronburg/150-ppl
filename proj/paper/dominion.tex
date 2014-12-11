@@ -249,12 +249,46 @@ is in some way `catchable'. Hakaru could for instance use Haskell's
 \hsk{State} monad to maintain both a list of warnings and errors
 along with the contents of its \hsk{Measure} monad.
 
-Similarly runtime errors inhibits future Hakaru-specific support for
+Similarly runtime errors inhibit future Hakaru-specific support for
 debugging because it relies on a decidedly imperative feature in a
-functional language. In particular one can modularize the implementation
+functional host language. In particular one can modularize the implementation
 of model debugging support in Hakaru if one takes advantage of the full
 expressive power of Haskell in lieu of relying solely on Haskell's \hsk{error}
 semantics. It would also be very helpful for Hakaru to print user-friendly
 error messages and suggestions about common mistakes seen in probabilistic
 models.
+
+\section{BLOG Analysis} \label{sec:blog-analysis}
+
+In addition to Hakaru we also look at the feasibility of defining a
+probabilistic model of Dominion as a BLOG model. The general form
+of Hakaru's issues just described in Section \ref{sec:hakaru-analysis}
+is `we have a powerful host language, the abstractions
+just need to be refined.' The form of BLOG's issues we discuss in this
+section is `we have a powerful model of computation and a set of
+natural probabilistic abstractions, but the linguistic components
+of BLOG are presently undeveloped or poorly abstracted.'
+
+One such poorly designed abstraction is the use of comprehensions
+in BLOG's grammar. BLOG currently supports set-comprehensions
+but not list-comprehensions. Grammatically (and syntactically) these
+two features are virtually identical.
+It is evident from this that BLOG's grammar has done a poor job of
+distinguishing between general purpose linguistic features and
+probabilistic-specific features. It is this author's opinion that
+there should be a clean distinction between probabilistic and
+general purpose features. BLOG in particular is, to some extent, embedded
+in Java. This embedding could be exploited to a similar extent that
+Hakaru exploits features of Haskell. Such an embedding would forgo the
+need to `reinvent the wheel' in terms of making BLOG a more expressive
+language.
+
+The current trajectory of BLOG appears to be towards tailoring
+general purpose language features to BLOG's particular model of computation.
+The ambitious nature of this goal could eventually give BLOG a highly
+expressive modeling form in conjunction with an efficient model of
+computation. Presently however, BLOG falls significantly short of the
+expressive power needed to naturally model significantly complex
+probabilistic processes.
+
 
