@@ -207,3 +207,54 @@ describing a probabilistic model of the possible worlds is more natural.
 In the domain of games, one can envision a declarative enumeration
 of the rules in a game and how they affect the game state.
 
+Such rules form the underlying mechanics of a game. The probabilistic
+components of these mechanics are, as discussed throughout this work,
+implementable in PPLs. The difficulties in creating these implementations
+in Hakaru in particular are described below (Section \ref{sec:hakaru-analysis}).
+
+\section{Hakaru Analysis} \label{sec:hakaru-analysis}
+
+When implementing in Haskell a complex model like that of Dominion, a
+need for various monadic structures arises. In the case of Dominion
+this includes the \hsk{State} and \hsk{Measure} monads (and eventually
+the \hsk{IO} monad). It would therefore have been helpful for Hakaru's
+\hsk{Measure} monad to support standard Haskell monads (\hsk{State} in
+particular). The current implementation of our model manages to combine
+these two monads using the \hsk{StateT} monad transformer and the use
+of Haskell's default \hsk{lift} to move values between the \hsk{State} and
+\hsk{Measure} monads. This model and more complex models using other
+monads would certainly benefit from Hakaru having its \hsk{Measure}
+monad derive more typeclasses.
+
+Similarly Hakaru's interface into Haskell's random number support was
+unsatisfying to use. In particular the modeler cannot specify a source
+of randomness at the top-level operations Hakaru exposes. While the
+default source of randomness Hakaru uses is applicable for many situations,
+it makes meta-programming difficult. In the implementation of our model
+we needed to re-write some of the sampling interfaces to consume a parametric
+source of randomness rather than a hard-coded one in order to get the
+desired effect.
+
+Another design flaw currently baked into Hakaru's runtime system is the
+use of runtime errors to unconditionally terminate the program when
+Hakaru sees something it is unable to handle. The existence of
+one of these errors is likely indicative of a bug in the model supplied
+to Hakaru. However it is unsatisfying because it both inhibits
+meta-programming and debugging.
+
+Meta-programming is inhibited because a modeler may for instance want to
+programmatically test for the correctness of a model by seeing if it
+produces a runtime error. This is only feasible if the runtime error
+is in some way `catchable'. Hakaru could for instance use Haskell's
+\hsk{State} monad to maintain both a list of warnings and errors
+along with the contents of its \hsk{Measure} monad.
+
+Similarly runtime errors inhibits future Hakaru-specific support for
+debugging because it relies on a decidedly imperative feature in a
+functional language. In particular one can modularize the implementation
+of model debugging support in Hakaru if one takes advantage of the full
+expressive power of Haskell in lieu of relying solely on Haskell's \hsk{error}
+semantics. It would also be very helpful for Hakaru to print user-friendly
+error messages and suggestions about common mistakes seen in probabilistic
+models.
+
