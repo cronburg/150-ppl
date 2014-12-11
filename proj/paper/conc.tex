@@ -65,15 +65,18 @@ printed by existing general-purpose PPLs.
 % 3 levels of meta (Language    -> Probabilistic -> Game)
 %                  (Linguistics -> Statistics    -> Design)
 
-%To make these sorts of analyses more concrete we hope to describe our analyses
-%from Section \ref{sec:dom:greedy-results} in terms a `game design'
-%domain expert can understand.
-%and described in terms a
-%game design domain expert not steeped in the specifics
+The tools and support we envision a game designer having
+in conjunction with a probabilistic DSL comprise:
 
-% TODO: future work discuss automation of analysis
-
-% TODO: discuss fitting algorithms in future work section
+\begin{itemize}
+\item Automated analysis of the form of inferred probability distributions
+      using existing curve fitting algorithms.
+\item Support for analysis of multiple variables at the same time
+      \begin{itemize}
+      \item Coordinated multiple views visualization of the conditioned
+            distributions over the latent variables.
+      \end{itemize}
+\item 
 
 % TODO / future work: compare a linear fit of the distribution with
 % an exponential one. discuss / think about how we might discuss why
@@ -86,15 +89,18 @@ printed by existing general-purpose PPLs.
 % is probabilistically linked to both the total number of turns in the
 % game and any latent variables we are interested in
 
+These tools and features will compliment Dominion-specific future
+work comprising:
+
 \begin{itemize}
 \item Implementation of more Dominion-specific heuristics.
 \item Designing heuristics capable of maintaining probabilistic models
-      corresponding to belief states. What is the feasability of recursive
-      probabilistic models in existing PPLs?
+      corresponding to belief states. What is the feasibility of recursive
+      use of probabilistic models in existing PPLs?
 \item Cross-validation with currently held beliefs of human Dominion
-      players / domain experts. \ref{human-card-comparisons}
+      players / domain experts. \cite{human-card-comparisons}
 \item Applying Machine Learning algorithms to publicly available Dominion
-      data sets. \ref{dominion-data-sets}
+      data sets. \cite{dominion-data-sets}
 \item Design of a probabilistic inference engine to determine
       {\bf balanced} sets of cards to play with.
 \end{itemize}
