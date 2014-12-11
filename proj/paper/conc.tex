@@ -25,8 +25,25 @@ results.
 This future analysis could involve computing values for the
 intercepts and slopes of the three distributions in Figure
 \ref{fig:rejection-sampling}. We believe this slope $m$ can be used
-as a relative measure of the balance between the cards $X$ and $Y$
-in our model.
+to compute the relative balance between the cards $X$ and $Y$ in
+our greedy model. Namely that balance is proportional to
+$1 / abs(m)$. A slope of exactly $m = 0$ would mean the cards
+$X$ and $Y$ are perfectly balance (infinite balance). In contrast
+a slope approaching $m = \pm \infty$ indicates either $X$ or $Y$
+completely dominates the other (perfectly imbalanced). The
+conditional distribution we infer would in this case approach
+the form of a dirac-delta function:
+
+$$\[P(p_0 | t_e = t_e') \rightarrow \left\{
+  \begin{array}{lr}
+  \delta(0.0) & : \textrm{ as } m \rightarrow +\infty
+  \delta(1.0) & : \textrm{ as } m \rightarrow -\infty
+  \end{array}
+\right.
+\]$$
+
+
+
 
 % TODO: future work discuss automation of analysis
 
