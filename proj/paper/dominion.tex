@@ -175,22 +175,6 @@ from the model (no inference).
 
 \section{Probabilistic Language Analysis} \label{sec:meta-analysis}
 
-% Need some sort of combinator library / monadic abstraction which
-% keeps track of the level of abstraction you want to describe your
-% model at. "Hyper-parameter" is an ambiguous name for something
-% which your probabilistic model does not condition on / 'simply'
-% indirectly changes the structure of the probabilistic computation
-% -- for a probabilistic model to be modular in a way that e.g. both
-% -- game designers and game players can use, the probabilistic
-% -- abstractions need to encompass some sort of naming scheme /
-% -- distinction between the level of abstraction at which a parameter
-% -- resides. How domain-specific are these abstractions? How universal
-% -- is the distinction between e.g. a hyper-parameter which changes
-% -- the fundamental structure of an expression in the condition of
-% -- an if-statement as compared to a model hyper-parameter which
-% -- changes the value of a random variable we are conditioning on.
-%    Clearly there are both linguistic and probabilistic implications of
-%    of how we classify these parameters.
 Existing probabilistic languages seem to rely heavily on the linguistic
 constructs given to them by their host languages. From our experience and
 current discussion of BLOG and Hakaru, we see that PPLs

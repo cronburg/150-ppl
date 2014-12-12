@@ -111,6 +111,25 @@ work comprising:
 \subsection{PPL Design} \label{sec:future:PPL}
 %On the PPL design side, we would like to further explore:
 
+% Need some sort of combinator library / monadic abstraction which
+% keeps track of the level of abstraction you want to describe your
+% model at. "Hyper-parameter" is an ambiguous name for something
+% which your probabilistic model does not condition on / 'simply'
+% indirectly changes the structure of the probabilistic computation
+% -- for a probabilistic model to be modular in a way that e.g. both
+% -- game designers and game players can use, the probabilistic
+% -- abstractions need to encompass some sort of naming scheme /
+% -- distinction between the level of abstraction at which a parameter
+% -- resides. How domain-specific are these abstractions? How universal
+% -- is the distinction between e.g. a hyper-parameter which changes
+% -- the fundamental structure of an expression in the condition of
+% -- an if-statement as compared to a model hyper-parameter which
+% -- changes the value of a random variable we are conditioning on.
+%    Clearly there are both linguistic and probabilistic implications of
+%    of how we classify these parameters.
+
+
+
 \begin{itemize}
 \item Useability of Church, Figaro, probability monad, and other
       PPLs in the context of this work.
