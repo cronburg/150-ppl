@@ -111,6 +111,43 @@ work comprising:
 \subsection{PPL Design} \label{sec:future:PPL}
 %On the PPL design side, we would like to further explore:
 
+Hakaru does not enforce any sort of type abstractions related to latent
+and observable variables. This makes for easy implementation of probabilistic
+models which can be used to answer various questions regardless of the
+exact interpretation of the variables in the question. This however in the
+best case requires a reader to implicitly (e.g. by reading code comments)
+determine which variables are latent or observed on a particular run of
+the program. In the worst case it can result in design flaws in probabilistic
+models which invalidate the results.
+
+One possible solution to this is for PPLs like Hakaru
+to strictly enforce the primitive probabilistic types (observable,
+latent, ...) of a variable using an existing strongly-typed host language.
+The PPL then defines a library of combinator functions for transforming
+and composing model variables. For example the `+' combinator for adding
+a latent and an observable variable together would result in a latent
+variable. The Haskell type signature might look something like:
+
+\begin{minted}[fontsize=\footnotesize]{haskell}
+(+) :: (Num a, Num b, Num c)
+    => Latent a -> Observable b -> Latent c
+\end{minted}
+
+Such abstractions would have allowed
+us to express our inference question (Question \ref{q;inference}) as an
+unambigous Haskell function. In particular the variable $p_0$ is used in
+one context as a known parameter to the model, and in another context as
+the latent variable we would like to infer. While our inference question
+is relatively simple (single variable), keeping track of which variables
+are observable and which are latent becomes error-prone when we look at
+inference questions involving multiple parameters of interest.
+
+%Similarly, `hyper-parameters' to a probabilistic model have a much richer
+%structure than their name suggests at first glance. In the context of a
+%probabilistic model, this work takes hyper-parameter to mean a parameter
+%which changes the structure of the computations in the model
+%but not the variables being conditioned on.
+
 % Need some sort of combinator library / monadic abstraction which
 % keeps track of the level of abstraction you want to describe your
 % model at. "Hyper-parameter" is an ambiguous name for something
@@ -128,10 +165,13 @@ work comprising:
 %    Clearly there are both linguistic and probabilistic implications of
 %    of how we classify these parameters.
 
+% $p_0$ is a known parameter in question #1 whereas it is a latent variable
+% in the inference question.
 
+In the immediate future we would like to investigate:
 
 \begin{itemize}
-\item Useability of Church, Figaro, probability monad, and other
+\item The useability of Church, Figaro, probability monad, and other
       PPLs in the context of this work.
 \item The utility of a domain specific language for modeling deckbuilding
       games. What do we gain from card-game specific probabilistic

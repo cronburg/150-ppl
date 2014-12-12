@@ -14,18 +14,71 @@ for Dominion are inherently intertwined with the probabilistic game state.
 
 \subsection{Game State}
 
-\subsection{Heuristics} \label{sec:dom:heuristics}
-We
+The exact details of what a model of Dominion needs to keep track of are
+described in Appendix \ref{appendix:dominion-state-format}. The most important
+part of this state information when formulating a buy heuristic is the set
+of cards available to be bought. This set of cards is known as the \emph{supply}.
+Each card in the supply has a name, a cost, and a number of copies available for
+purchase. A player then, during her buy-phase, choose a card to buy costing
+less than or equal to the number of \emph{treasure} cards played during her
+money-phase.
+
+In addition to the buy-phase transforming the state of the game (moving a
+card from the supply into a player's discard pile), there is an action-phase
+(preceding the money and buy phases) during which a player plays cards
+from her hand. These cards played transform the state of the game. One
+such action card which transforms the game state is described in detail
+in Appendix \ref{appendix:complexcard}.
+
+\subsection{Greedy Heuristic} \label{sec:dom:heuristics}
+
+In Dominion a game heuristic comprises how a player plays cards, and how
+she buys cards. In general the play-heuristic is easier to reason about
+because it usually just involves maximization of the amount of money
+in the player's hand by the end of the action phase. In probabilistic
+programming terms, this can be implemented as a sampling of the
+distribution over the amount of money resulting from each possible
+chain of actions the player can perform. A good play heuristic might then
+choose the set of actions which result in the highest expectation value
+for amount of money.
+
+For simplicity, the play-heuristic used in the experiments in this work
+is one which greedily plays cards which give it more actions. After
+playing all cards which give it additional actions, it plays all remaining
+cards in decreasing order of cost of the card. The haskell implementation
+of this is:
+
+\begin{minted}
+[ fontsize=\footnotesize
+]{haskell}
+greedyAct :: Game -> Measure (Maybe CardName)
+greedyAct g = do 
+  let as = filter isAction $ (cards.hand.p1) g
+  case length as of
+    0 -> return Nothing
+    _ -> if elem VILLAGE as
+         then return $ Just VILLAGE
+         else return $ Just $ maximumBy (comparing cost) as
+\end{minted}
+
+In contrast to the play-heuristic, the buy-heuristic is a much more
+interesting heuristic to study. This is because a `good' buy-heuristic
+will change throughut the course of the game. Again for simplicity however,
+we study a heuristic which greedily buys the most expensive card it can
+with a high probability regardless of the turn number in the game. The
+exact intricacies of the buy heuristic can be gleaned from the Hakaru
+model implementation \cite{deckbuild-model-github}.
 
 % -----------------------------------------------------------------------------
 % Theory of the greedy-vs-greedy experiment
 \subsection{Greedy Theory}
 A simple query one might wish to ask of the greedy heuristic is:
 
-\begin{quote} \label{quote:dominion-query}
-Given that we buy card $X$ with probability $p_0$ and card $Y$ with
-probability $(1 - p_0)$, what is the distribution over the length of
-the game?
+\begin{quote} %\label{quote:dominion-query}
+  {\bf Question 1: }
+  Given that we buy card $X$ with probability $p_0$ and card $Y$ with
+  probability $(1 - p_0)$, what is the distribution over the length of
+  the game?
 \end{quote}
 
 In this query, we have model parameters comprising:
@@ -45,20 +98,50 @@ implementation):
 \item \hsk{turnRules    :: [GameParameters]}
 \end{itemize}
 
+One observe-query inference question to ask the model based on the
+probable game lengths Question 1 \ignore{\ref{quote:dominion-query}} gives us is:
 
+\begin{quote} %\label{q:inference}
+%\begin{multicols}{2}
+  {\bf Question 2: }
+  In a greedy buy heuristic a player buys card $X$ with some unknown probability $p_0$
+  and card $Y$ with probability $(1 - p_0)$. We observe a game length of $t_e'$
+  turns. What is the probability $p_0$ the greedy heuristic used?
+%  \columnbreak
+%  (1)
+%\end{multicols}
+\end{quote}
 
-One observe-query inference question to ask the model then is:
+The semantics of this question are slightly different than those of
+Question 1 \ignore{\ref{quote:dominion-query}}. They key difference is in the
+perspective of the asker. In this question $p_0$ is a latent variable
+because the asker is not told the value of this parameter to the greedy
+heuristic model. In the previous question $p_0$ was simply a parameter
+to the model because the perspective of the question is from the player
+executing the buy heuristic. See Section \ref{sec:future:PPL} for a
+discussion of the linguistic ramifications of the context-dependence
+of whether or not a variable is latent, observable, a parameter, or a
+hyper-parameter. For the greedy model presented in this work, we do
+not constrain the type of $p_0$ with any of these type abstractions.
+This is primarily because Hakaru neither requires nor enforces such types.
 
-\begin{equation} \label{q:inference}
-...
-\end{equation}
+The simplicity of this question makes for an easier to follow domain
+analysis of the greedy heuristic. It however has the drawback of not being as
+interesting as more complex queries. An obvious extension to this query
+is to expand the state space to include a parameter $p_i$ for every possible
+\hsk{(money,card) :: (Int,Card)} pair. The lack of probabilistic abstractions
+just discussed however makes the implementation of such a model in Hakaru
+error-prone. Therefore for the sake of ensuring correctness of our implementation,
+we only present results for the one-parameter case. See the future work
+section (Section \ref{sec:future:PPL}) for further discussion of the
+abstractions a PPL might support.
 
 % -----------------------------------------------------------------------------
 % Results figures:
 \subsection{Greedy Results \& Analysis} \label{sec:dom:greedy-results}
 We now present results for the greedy heuristic, as described in
 Section \ref{sec:dom:heuristics}. Before answering the inference
-question (Question \ref{q:inference}), we first take unconditioned
+question (Question 2\ignore{\ref{q:inference}}), we first take unconditioned
 samples from the greedy-vs-greedy model to determine characteristic
 game lengths. The result of this sampling is realized as a
 gaussian-like distribution of Figure \ref{fig:turn-dist}. Sampling
@@ -84,7 +167,7 @@ also in line with the personal belief of the author that a
 However, what the gaussian form of Figure \ref{fig:turn-dist}
 does not tell us is the characteristic distribution of values of
 $p_0$ for a given game length. This is what the inference Question
-\#\ref{q:inference} is trying to give us insight into.
+2 \ignore{\ref{q:inference}} is trying to give us insight into.
 
 %While this is
 %interesting and is in line with the personal belief of the author
