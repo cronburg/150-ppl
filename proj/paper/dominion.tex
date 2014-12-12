@@ -58,7 +58,8 @@ greedyAct g = do
     0 -> return Nothing
     _ -> if elem VILLAGE as
          then return $ Just VILLAGE
-         else return $ Just $ maximumBy (comparing cost) as
+         else return $ Just $
+              maximumBy (comparing cost) as
 \end{minted}
 
 In contrast to the play-heuristic, the buy-heuristic is a much more
@@ -208,7 +209,7 @@ methods as described earlier in Section \ref{sec:mcmc}.
 
 For the specific case of $X =$ \hsk{VILLAGE} and $Y =$ \hsk{CHANCELLOR},
 we see (Figure \ref{fig:rejection-sampling}) a relationship where as the
-number of turns $t_e'$ we condition on goes down...
+number of turns $t_e'$ we condition on goes down:
 
 \begin{itemize}
 \item the slope $m$ of the conditional distribution increases from negative to positive
@@ -240,7 +241,8 @@ as described on the right-hand side of the equation.
 % Results figures:
 
 \begin{figure}
-\includegraphics[width=.95\columnwidth]{../pres/village-chancellor-turn-dist.png}
+\includegraphics[width=1.0\columnwidth]{../gaussian-dist.png}
+%../pres/village-chancellor-turn-dist.png}
 \caption{\label{fig:turn-dist} Probability distribution over number of turns
 in a 2-player game of Dominion.
 Both players play a greedy strategy with model
@@ -252,6 +254,22 @@ This distributions is unconditioned, therefore only requiring sampling directly
 from the model (no inference).
 }\end{figure}
 
+\begin{figure}
+\includegraphics[width=1.0\columnwidth]{../3-row-dist.png}
+\caption{\label{fig:rejection-sampling} Inferred probability distributions
+using rejection sampling. On the x-axis we have the inferred value of the
+latent variable $p_0$. A value of $p_0 = 1.0$ indicates the greedy player
+buys a \hsk{VILLAGE} with probability $1.0$ and a \hsk{CHANCELLOR} with
+probability $0.0$ when it has $3$ money (the cost of both cards) in play.
+On the y-axis we have both frequency and probability. Note that the frequency
+is relative to a total sample size of $40,590$. Similarly the probability is
+normalized by the total sample size. As a result the probabilities in each
+individual distribution will not sum to $1$. The distributions shown are formed
+using $30$ bins each of size $1.0 / 30$. We show the inferred distribution only
+for $t_e \in$ \hsk{[38,35,33,31,28]} because these give a sufficient view of
+how the distribution over $p_0$ changes for typical values of $t_e$ from
+the gaussian in Figure \ref{fig:turn-dist}}
+\end{figure}
 
 % future work: less noisy / more samples / error bars on the bar charts
 %               -- validate the form of the distribution statistically

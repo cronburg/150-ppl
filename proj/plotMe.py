@@ -25,10 +25,17 @@ def plot_turn(t):
   savefig("data/village-chancellor-%02dturns.png" % (t,))
   close()
 
-"""
+hist(turn, bins=23, color='g')
+xlim(25,43)
+ylim(0,6500)
+xlabel("# turns to reach end of game ($t_e$)")
+ylabel("frequency")
+savefig("gaussian-dist.png")
+
 for t in range(25, 45 + 1):
   plot_turn(t)
 
+"""
 idx = [38, 33, 28]
 for t in idx:
   hist_data = param0[where(turn == t)[0]]

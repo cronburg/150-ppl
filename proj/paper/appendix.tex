@@ -21,9 +21,11 @@ $5$ cards during her draw phase, starts with $1$ action during her action
 phase, starts with $1$ buy during her buy phase, and discards \verb|All|
 of her cards during her discard phase.
 For an in-depth analysis of the abstractions used to define these
-hyper-parameters see the DeckBuild \ref{DeckBuild} paper.
-In short, the above code is the quasiquoted \ref{haskell-quasiquoting}
+hyper-parameters see the DeckBuild language \cite{DeckBuild} paper.
+In short, the above code is the quasiquoted \cite{haskell-quasiquoting}
 output of the embedded DSL DeckBuild.
+
+\newpage
 
 \section{Complex Card Effects - Probabilistic Implications}
 \label{appendix:complexcard}
@@ -65,6 +67,8 @@ implication creates a probabilistic causal link from actions made by the player
 to the observable states of the game.
 The same probabilistic causal link exists for \hsk/VILLAGE/ and \hsk/CHANCELLOR/,
 the two cards discussed in detail in this paper.
+
+\newpage
 
 \section{Runtime System - State Format} \label{appendix:dominion-state-format}
 \begin{small}
@@ -117,4 +121,32 @@ heuristic models used in this work were designed in a manner which expects
 immutable data. This is true of probabilistic state models in general - many
 of the transformations done to the state are purely functional, making
 immutable semantics in the language useful.
+
+\newpage
+
+\section{Village and Chancellor} \label{app:dominion-card}
+
+\begin{multicols}{2}
+  \begin{flushright}
+    \includegraphics[width=.45\columnwidth]{../pres/village.jpg} \\
+    \copyright \cite{dominion}
+    \end{flushright}
+  \columnbreak
+  \begin{flushleft}
+    \includegraphics[width=.45\columnwidth]{../pres/chancellor.jpg} \\
+    \copyright \cite{dominion}
+    \end{flushleft}
+\end{multicols}
+
+The two cards above are the \hsk{VILLAGE} and \hsk{CHANCELLOR} cards referred to
+throughout this paper. In this case the model parameter $X$ is the \hsk{VILLAGE} and
+the model parameter $Y$ is the \hsk{CHANCELLOR}. This is an interesting first pair
+of cards to look at because the first buy in a game of Dominion involving these two
+cards usually requires the player to choose between buying one of these two cards.
+Additionally these cards allow us to make a number of simplifications in the first
+iteration of the greedy heuristic. Namely that the optimal play heuristic for a hand
+which can only contain these two action cards is to always play \hsk{VILLAGE} cards
+first followed by playing any remaining \hsk{CHANCELLOR} cards. This simple action
+heuristic is optimal because it maximizes the amount of money the player has during
+her subsequent buy phase.
 

@@ -1,12 +1,12 @@
 
 % Probabilistics models, observations, and queries
-\section{Model-Observe-Query} \label{sec:moq}
+%\section{Model-Observe-Query} \label{sec:moq}
 % Talk about how, in general, game heuristics can be expressively
 % described using probablistic models
 
-\subsection{Example Game}
+%\subsection{Example Game}
 
-\subsection{Markov Chain Monte-Carlo} \label{sec:mcmc}
+\subsection{Probabilistic Techniques: Markov Chain Monte-Carlo} \label{sec:mcmc}
 % talk about how we use rejection sampling when performing inference
 % on probabilistic distributions, and why this is sufficient for
 % our purposes >>>>v
@@ -23,14 +23,21 @@
 % sampling successful because it's generally easy to find a conditionally true
 % point in the state space regardless of the prior you sample from.
 
+In this work we use rejection sampling to infer distributions over the
+latent variables in our model.
 In the future we would like to further study instances in which rejection
-sampling is insufficient due to high rejection rates. High rejection rates
+sampling is insufficient due to high rejection rates. Section
+\ref{sec:future} goes into more detail about future work likely requiring
+more clever inference techniques.
+
+High rejection rates
 in the case of deck building games like Dominion will most likely be the
 result of inference questions involving very restrictive conditioning.
 While it is possible that a high rejection rate can be the result of
 a non-diffuse true distribution, this is not indicative of an interesting
 deck of cards. For example you could design a card which turns
-of shuffling in the game resulting in a pathologically non-diffuse 
+of shuffling in the game resulting in a pathologically non-diffuse distribution.
+This however is not the kind of card game designers wish to study.
 
 %conditional distributions we are
 % currently trying to sample from 

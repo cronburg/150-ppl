@@ -7,7 +7,7 @@ import numpy as np
 
 data = pickle.load(open("data/data.pkl",'r'))
 param0,turn = transpose(data)
-ymax2 = 250.0 / len(data)
+ymax2 = 275.0 / len(data)
 
 def to_percentage(y,pos):
   ret = round(y * 100.0, 2)
@@ -31,27 +31,30 @@ for (t,i,ax1) in zip(idx,range(len(idx)),ax_array):
   ax2.yaxis.set_major_formatter(plt.FuncFormatter(to_percentage))
   #ax2.set_yticks([0,.02,.04,.06,.08])
   #ax2.set_ylim([0,.08])
-  ax2.set_yticks(np.linspace(0.0, ymax2, 6)) #[0,.02,.04,.06,.08])
-  ax2.set_ylim([0, ymax2])
 
   hist_data = param0[where(turn == t)[0]]
   weights = np.ones_like(hist_data) #/ len(hist_data)
+  
+  print (275.0/len(hist_data)),ymax2,len(hist_data),len(data)
+  ax2.set_yticks(np.linspace(0.0, ymax2, 6)) #[0,.02,.04,.06,.08])
+  ax2.set_ylim([0, ymax2])
 
 #  ax2.hist(hist_data, bins=30, color=c1, weights=weights/len(hist_data))
 
   ax1.hist(hist_data, bins=30, color=c2)
   ax1.set_xlim(0.0, 1.0)
-  ax1.set_ylim(0, 250)
+  ax1.set_ylim(0, 275)
   #ax1.set_yticks([
   #ax2.set_title("P($p_0$ | $t_e$ = %d)"%(t,))
-  ax1.text(.5, .9, "P($p_0$ | $t_e$ = %d)"%(t,),
+  ax1.text(.5, .88, "P($p_0$ | $t_e$ = %d)"%(t,),
            horizontalalignment='center',
-           transform=ax1.transAxes)
-  if i == 2: ax1.set_ylabel("frequency")
-  if i == 2: ax2.set_ylabel("probability $\\times$  100")
+           transform=ax1.transAxes,
+           fontsize=16)
+  if i == 2: ax1.set_ylabel("frequency", fontsize=16)
+  if i == 2: ax2.set_ylabel("probability $\\times$  100", fontsize=16)
 
   if i + 1 < len(idx): ax1.get_xaxis().set_visible(False)
 
-ax1.set_xlabel("param0 (Village-to-Chancellor buy ratio)")
+ax1.set_xlabel("$p_0$ (Village-to-Chancellor buy ratio)",fontsize=16)
 plt.savefig("3-row-dist.png")
 
