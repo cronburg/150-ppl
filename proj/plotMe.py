@@ -9,7 +9,7 @@ from pylab import *
 data = pickle.load(open("data/data.pkl",'r'))
 param0,turn = transpose(data)
 
-for t in range(25, 45 + 1):
+def plot_turn(t):
   hist_data = param0[where(turn == t)[0]]
   weights = np.ones_like(hist_data) #/ len(hist_data)
   
@@ -24,4 +24,26 @@ for t in range(25, 45 + 1):
   title("P(param0 | turns == %02d)" % (t,))
   savefig("data/village-chancellor-%02dturns.png" % (t,))
   close()
+
+"""
+for t in range(25, 45 + 1):
+  plot_turn(t)
+
+idx = [38, 33, 28]
+for t in idx:
+  hist_data = param0[where(turn == t)[0]]
+  weights = np.ones_like(hist_data) #/ len(hist_data)
+  
+  hist(hist_data, bins=30, color='g', weights=weights)
+  xlim(0.0, 1.0)
+  ylim(0,250)
+  #ylim(0.0, 0.12)
+  
+  xlabel("param0 (Village-to-Chancellor buy ratio)")
+  #ylabel("probability")
+  ylabel("frequency")
+  title("P(param0 | turns == %02d)" % (t,))
+  savefig("data/village-chancellor-%02dturns.png" % (t,))
+  close()  
+"""
 
