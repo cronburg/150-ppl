@@ -39,7 +39,7 @@ In contrast
 a slope approaching $m = \pm \infty$ indicates either $X$ or $Y$
 completely dominates the other (perfectly imbalanced). The
 conditional distribution we infer should, for perfect imbalance,
-approach the form of a dirac-delta function:
+approach the form of a Dirac delta function:
 
 $$P(p_0 | t_e = t_e') \rightarrow \left\{
   \begin{array}{lr}
@@ -51,7 +51,7 @@ $$
 
 In similar fashion to the slope $m$, we believe the intercept $b$ to be
 an absolute measure of the balance between cards $X$ and $Y$.
-Future work will involve both testing these hypotheses about
+Future work involves both testing these hypotheses about
 the form of the distributions and quantifying the distributions
 for interesting conditions.
 
@@ -92,7 +92,7 @@ in conjunction with a probabilistic DSL comprise:
 % is probabilistically linked to both the total number of turns in the
 % game and any latent variables we are interested in
 
-These tools and features will compliment Dominion-specific future
+These tools and features compliment Dominion-specific future
 work comprising:
 
 \begin{itemize}
@@ -135,7 +135,7 @@ variable. The Haskell type signature might look something like:
 
 Such abstractions would have allowed
 us to express our inference question (Question 2\ignore{\ref{q:inference}}) as an
-unambigous Haskell function. In particular the variable $p_0$ is used in
+unambiguous Haskell function. In particular the variable $p_0$ is used in
 one context as a known parameter to the model, and in another context as
 the latent variable we would like to infer. While our inference question
 is relatively simple (single variable), keeping track of which variables
@@ -171,14 +171,14 @@ inference questions involving multiple parameters of interest.
 In the immediate future we would like to investigate:
 
 \begin{itemize}
-\item The useability of Church, Figaro, probability monad, and other
+\item The usability of Church, Figaro, probability monad, and other
       PPLs in the context of this work.
-\item The utility of a domain specific language for modeling deckbuilding
+\item The utility of a domain specific language for modeling deck building
       games. What do we gain from card-game specific probabilistic
       abstractions?
 \end{itemize}
 
 %\section{Conclusions} \label{sec:conc}
 
-\section{Acknowledgements} \label{sec:ack}
+%\section{Acknowledgements} \label{sec:ack}
 

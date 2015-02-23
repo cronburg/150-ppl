@@ -4,6 +4,7 @@
 \usepackage[pdftex]{graphicx}% Include figure files
 \usepackage{bm}
 \usepackage{natbib} % necessary for bibtex
+%\usepackage{biblatex}
 \usepackage[toc,page]{appendix}
 \usepackage{pgffor}
 \usepackage{minted}
@@ -32,6 +33,9 @@
      \parbox{10cm}{\em #1}\hspace*{2cm}(\arabic{quotecount})\\[1cm]}
 
 \newcommand{\ignore}[1]{}
+
+%\usepackage{etoolbox}
+%\patchcmd{\thebibliography}{\chapter*}{\section*}{}{}
 
 \begin{document}
 

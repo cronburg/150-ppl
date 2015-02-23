@@ -5,8 +5,8 @@
 
 Dominion is a game we are familiar with. This game falls into the category of
 {\bf turn-based
-deckbuildings game}, where a player \emph{builds} a good deck by choosing what
-cards to buy on their turn. The probabilistic component of deckbuilding games
+deck building game}, where a player \emph{builds} a good deck by choosing what
+cards to buy on her turn. The probabilistic component of deck building games
 arises from shuffling decks of cards at certain points in the game. In particular
 in Dominion the cards a player plays can affect both when cards get shuffled
 and the composition of the deck being shuffled. As a result, game-play heuristics
@@ -19,20 +19,20 @@ described in Appendix \ref{appendix:dominion-state-format}. The most important
 part of this state information when formulating a buy heuristic is the set
 of cards available to be bought. This set of cards is known as the \emph{supply}.
 Each card in the supply has a name, a cost, and a number of copies available for
-purchase. A player then, during her buy-phase, choose a card to buy costing
+purchase. A player then, during her buy-phase, chooses a card to buy costing
 less than or equal to the number of \emph{treasure} cards played during her
 money-phase.
 
 In addition to the buy-phase transforming the state of the game (moving a
 card from the supply into a player's discard pile), there is an action-phase
 (preceding the money and buy phases) during which a player plays cards
-from her hand. These cards played transform the state of the game. One
-such action card which transforms the game state is described in detail
+from her hand. Actions transform the state of the game. One
+such action card is described in detail
 in Appendix \ref{appendix:complexcard}.
 
 \subsection{Greedy Heuristic} \label{sec:dom:heuristics}
 
-In Dominion a game heuristic comprises how a player plays cards, and how
+In Dominion a game heuristic comprises how a player plays cards and how
 she buys cards. In general the play-heuristic is easier to reason about
 because it usually just involves maximization of the amount of money
 in the player's hand by the end of the action phase. In probabilistic
@@ -43,8 +43,8 @@ choose the set of actions which result in the highest expectation value
 for amount of money.
 
 For simplicity, the play-heuristic used in the experiments in this work
-is one which greedily plays cards which give it more actions. After
-playing all cards which give it additional actions, it plays all remaining
+is one which greedily plays cards which give the player more actions. After
+playing all cards which give her additional actions, the player plays all remaining
 cards in decreasing order of cost of the card. The haskell implementation
 of this is:
 
@@ -64,7 +64,7 @@ greedyAct g = do
 
 In contrast to the play-heuristic, the buy-heuristic is a much more
 interesting heuristic to study. This is because a `good' buy-heuristic
-will change throughut the course of the game. Again for simplicity however,
+will change throughout the course of the game. Again for simplicity however,
 we study a heuristic which greedily buys the most expensive card it can
 with a high probability regardless of the turn number in the game. The
 exact intricacies of the buy heuristic can be gleaned from the Hakaru
@@ -114,7 +114,7 @@ probable game lengths Question 1 \ignore{\ref{quote:dominion-query}} gives us is
 \end{quote}
 
 The semantics of this question are slightly different than those of
-Question 1 \ignore{\ref{quote:dominion-query}}. They key difference is in the
+Question 1 \ignore{\ref{quote:dominion-query}}. The key difference is in the
 perspective of the asker. In this question $p_0$ is a latent variable
 because the asker is not told the value of this parameter to the greedy
 heuristic model. In the previous question $p_0$ was simply a parameter
@@ -145,10 +145,10 @@ Section \ref{sec:dom:heuristics}. Before answering the inference
 question (Question 2\ignore{\ref{q:inference}}), we first take unconditioned
 samples from the greedy-vs-greedy model to determine characteristic
 game lengths. The result of this sampling is realized as a
-gaussian-like distribution of Figure \ref{fig:turn-dist}. Sampling
+Gaussian-like distribution of Figure \ref{fig:turn-dist}. Sampling
 the model with other values of the \hsk{VILLAGE} - \hsk{CHANCELLOR}
 buy ratio $p_0$ shows that $p_0$ is inversely related to the mean
-of the gaussian $\mu_{t}$.
+of the Gaussian $\mu_{t}$.
 
 From this information we infer that the \hsk{VILLAGE} card has
 a greater impact on how quickly the game ends. This is interesting
@@ -157,7 +157,7 @@ cards. Performing an automated analysis on every possible pair
 of cards using this sampling technique, one could:
 
 \begin{itemize}
-\item Design a good greedy buy heuristics
+\item Design effective greedy buy heuristics
 \item Determine the balance of the hyper-parameter corresponding
       to which cards are being used in the game.
 \end{itemize}
@@ -165,10 +165,10 @@ of cards using this sampling technique, one could:
 The \hsk{VILLAGE} having a greater impact on the game ending is
 also in line with the personal belief of the author that a
 \hsk{VILLAGE} is, in general, more useful than a \hsk{CHANCELLOR}.
-However, what the gaussian form of Figure \ref{fig:turn-dist}
+However, what the Gaussian form of Figure \ref{fig:turn-dist}
 does not tell us is the characteristic distribution of values of
-$p_0$ for a given game length. This is what the inference Question
-2 \ignore{\ref{q:inference}} is trying to give us insight into.
+$p_0$ for a given game length. This is what the inference question
+(Question 2\ignore{\ref{q:inference}}) is trying to give us insight into.
 
 %While this is
 %interesting and is in line with the personal belief of the author
@@ -204,8 +204,8 @@ key to this equation is that $m$ and $b$ are variables which cannot
 be directly sampled / observed and have a probabilistic causal affect
 on the observed variable $t_e$.
 Since we have no feasible means for determining the closed analytical
-forms of $m$ and $b$ we have relied on the Markov Chain Monte-Carlo (MCMC)
-methods as described earlier in Section \ref{sec:mcmc}.
+forms of $m$ and $b$ we rely on the Markov Chain Monte-Carlo (MCMC)
+method discussed  in Section \ref{sec:mcmc}.
 
 For the specific case of $X =$ \hsk{VILLAGE} and $Y =$ \hsk{CHANCELLOR},
 we see (Figure \ref{fig:rejection-sampling}) a relationship where as the
@@ -219,7 +219,7 @@ number of turns $t_e'$ we condition on goes down:
 \end{itemize}
 
 These trends are unsurprisingly in accordance with the trend of $\mu_{t_e}$,
-the mean of the gaussian distribution of Figure \ref{fig:turn-dist}. Namely
+the mean of the Gaussian distribution of Figure \ref{fig:turn-dist}. Namely
 that the \hsk{VILLAGE} to \hsk{CHANCELLOR} ratio increases as the number of
 turns in the game decreases. The new insight we have gained from our MCMC
 methods is the form of Equation \ref{eqn:linear-distribution} as well as values
@@ -231,11 +231,11 @@ computed by a human, but given a good fitting algorithm could be automated.
 See Section \ref{sec:future} for further discussion of analysis automation.
 
 % TODO: this paragraph...
-variables of $t_e$ the observed game
-length random variable, $t_e'$ a specific value for $t_e$, and
-$m$ and $b$ the latent random variables which together comprise
-a characteristic description of the conditional distribution
-as described on the right-hand side of the equation.
+%variables of $t_e$ the observed game
+%length random variable, $t_e'$ a specific value for $t_e$, and
+%$m$ and $b$ the latent random variables which together comprise
+%a characteristic description of the conditional distribution
+%as described on the right-hand side of the equation.
 
 % -----------------------------------------------------------------------------
 % Results figures:
@@ -246,12 +246,12 @@ as described on the right-hand side of the equation.
 \caption{\label{fig:turn-dist} Probability distribution over number of turns
 in a 2-player game of Dominion.
 Both players play a greedy strategy with model
-parameters of $X = \textrm{Village}$, $Y = \textrm{Chancellor}$, and
+parameters of $X =$ \hsk{VILLAGE}, $Y =$ \hsk{CHANCELLOR}, and
 $p_0 = 0.5$. See Appendix \ref{app:dominion-card} for a complete description
 of the semantics behind these cards and why this pair of cards is interesting
 for the game Dominion.
-This distributions is unconditioned, therefore only requiring sampling directly
-from the model (no inference).
+This distributions is unconditioned and does not involve any latent variables,
+therefore only requiring sampling directly from the model (no inference).
 }\end{figure}
 
 \begin{figure}
@@ -268,7 +268,7 @@ individual distribution will not sum to $1$. The distributions shown are formed
 using $30$ bins each of size $1.0 / 30$. We show the inferred distribution only
 for $t_e \in$ \hsk{[38,35,33,31,28]} because these give a sufficient view of
 how the distribution over $p_0$ changes for typical values of $t_e$ from
-the gaussian in Figure \ref{fig:turn-dist}}
+the Gaussian in Figure \ref{fig:turn-dist}}
 \end{figure}
 
 % future work: less noisy / more samples / error bars on the bar charts
@@ -277,12 +277,13 @@ the gaussian in Figure \ref{fig:turn-dist}}
 \section{Probabilistic Language Analysis} \label{sec:meta-analysis}
 
 Existing probabilistic languages seem to rely heavily on the linguistic
-constructs given to them by their host languages. From our experience and
-current discussion of BLOG \cite{BlOG} and Hakaru \cite{hakaru}, we see that PPLs
+constructs given to them by their host languages. From our experience
+in implementing probabilistic game heuristic models
+with BLOG \cite{BlOG} and Hakaru \cite{hakaru}, we see that PPLs
 which tend to defer to their host language's abstraction capabilities are more
 expressive and powerful. At the same time such languages also rely
 heavily on the model of computation given to them by their host language.
-Hakaru relies heavily on Haskell's monadic mode of computation. BLOG on
+Hakaru relies heavily on Haskell's monadic model of computation. BLOG on
 the other hand has developed the {\bf many-worlds} model of computation.
 
 Probabilistically, the latter model of computation can be very satisfying
@@ -335,7 +336,7 @@ is in some way `catchable'. Hakaru could for instance use Haskell's
 along with the contents of its \hsk{Measure} monad.
 
 Similarly runtime errors inhibit future Hakaru-specific support for
-debugging because it relies on a decidedly imperative feature in a
+debugging because they rely on an inherently imperative feature in a
 functional host language. In particular one can modularize the implementation
 of model debugging support in Hakaru if one takes advantage of the full
 expressive power of Haskell in lieu of relying solely on Haskell's \hsk{error}

@@ -107,13 +107,14 @@ Above is a snapshot of the state of the runtime system after two
 greedy models played a game against each other.
 The models are given direct access to this game-state information
 on each turn of the game. In future iterations of the runtime system
-their will be a feature whereby the players can remember what
+there will be a feature whereby the players can remember what
 they did on previous turns.
 
 In the snapshot, we have a \hsk{Supply :: [(CardName,Int)]} where
 the \hsk{Int} corresponds to the number of copies of
 that particular card in the supply. The runtime system is implemented in
-this manner so as to reduce the space-complexity constant.
+this manner so as to reduce the space-complexity constant of functions
+which interact with the supply.
 
 The immutable nature of data is an advantage of using Haskell as the
 host language for probabilistic modeling. In particular, the probabilistic
